@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Wrapper from "./components/Wrapper";
+import Nav from "./components/Nav";
+import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import Report from "./pages/Report";
+import NoMatch from "./pages/NoMatch";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+class App extends Component {
+  state = {
+    score : 0,
+    topscore : 0
+  };
+  
+
+  render() {
+    return (
+      <Router>
+        <div>
+          <Nav />
+          <Wrapper>
+            <Switch>
+              <Route exact path="/" component={Dashboard} />
+              <Route exact path="/dashboard" component={Dashboard} />              
+              <Route exact path="/login" component={Login} />
+              <Route exact path="/signup" component={SignUp} />
+              <Route exact path="/report" component={Report} />
+              <Route component={NoMatch} />
+            </Switch>
+          </Wrapper>
+        </div>
+      </Router>
+    );
+  }
 }
 
 export default App;
