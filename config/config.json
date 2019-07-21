@@ -1,9 +1,10 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "dev",
-    "host": "127.0.0.1",
+    "username": "vt1nnwsztzmafsh7",
+    "password": "e9r53zcjzm3kifsv",
+    "database": "e1e8ddy4og0od0jv",
+    "host": "gx97kbnhgjzh3efb.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    "port": 3306,
     "dialect": "mysql",
     "define": {
       "charset": "utf8",
@@ -12,10 +13,11 @@
     }
   },
   "test": {
-    "username": "root",
-    "password": null,
-    "database": "test",
-    "host": "127.0.0.1",
+    "username": "vt1nnwsztzmafsh7",
+    "password": "e9r53zcjzm3kifsv",
+    "database": "e1e8ddy4og0od0jv",
+    "host": "gx97kbnhgjzh3efb.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+    "port": 3306,
     "dialect": "mysql",
     "define": {
       "charset": "utf8",
