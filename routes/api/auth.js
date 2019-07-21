@@ -9,6 +9,6 @@ router.route('/login')
   .post(authController.login);
 
 router.route("/user_data")
-  .get(authController.findById)
+  .get(authController.user_data)
 
 module.exports = router;

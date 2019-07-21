@@ -8,4 +8,6 @@ router.route("/signup")
 
 router.route("/logout")
   .get(userController.logout)
+
+
 module.exports = router;
