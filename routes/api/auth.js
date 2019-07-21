@@ -8,4 +8,7 @@ router.use(passport.authenticate('local'));
 router.route('/login')
   .post(authController.login);
 
+router.route("/user_data")
+  .get(authController.findById)
+
 module.exports = router;

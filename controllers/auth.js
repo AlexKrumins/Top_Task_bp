@@ -1,7 +1,19 @@
 // const db = require('../models');
 
-const login = async (req, res) => {
-  res.json(req.user);
-};
+module.exports = {
+  login: async (req, res) => {
+    res.json(req.user);
+  },
+  user_data: (req, res) => {
+    if (!req.user) {
+      res.json({});
+    } 
+    else {
+      res.json({
+        email: req.user.email,
+        id: req.user.id
+      })
+    };
+  },
 
-exports.login = login;
+};
