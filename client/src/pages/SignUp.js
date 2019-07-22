@@ -3,7 +3,7 @@ import {FormBtn, Email, Password } from "../components/Form";
 
 import API from "../utils/API";
 
-class Login extends Component {
+class SignUp extends Component {
   state = {
     email: "",
     password: "",
@@ -24,8 +24,12 @@ class Login extends Component {
         password: this.state.password
       })
         .then(res => {
-          window.location.replace("/");
-          console.log(res);
+          if(res.data) {
+            window.location.replace("/login");
+            console.log(res);
+          } else {
+            console.log("Sign-up error")
+          }
         })
         .catch(err => console.log(err));
     }
@@ -48,11 +52,11 @@ class Login extends Component {
               disabled={!(this.state.email && this.state.password)}
               onClick={this.handleFormSubmit}
             >
-              Login
+              Create Account
             </FormBtn>
           </form>
     );
   }
 }
 
-export default Login;
+export default SignUp;

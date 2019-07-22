@@ -21,11 +21,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
     },      
     start: { 
-      type: DataTypes.DATE, 
+      type: DataTypes.TIME, 
       default: null
     },
     end: { 
-      type: DataTypes.DATE, 
+      type: DataTypes.TIME, 
       default: null, 
     },
     notes: {
@@ -37,5 +37,14 @@ module.exports = function(sequelize, DataTypes) {
       default: null,
     }
   });
-return Task;
+
+  Task.associate = function(models) {
+    Task.belongsTo(models.User, {
+      foreignKey: {
+        allowNull: false
+      }
+    });
+  };
+
+  return Task;
 };
