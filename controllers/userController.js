@@ -3,6 +3,7 @@ const db = require("../models");
 
 module.exports = {
   findById: function(req, res) {
+    if (!req.user) return res.redirect("/login")
     db.User
       .findById(req.params.id)
       .then(dbModel => res.json(dbModel))

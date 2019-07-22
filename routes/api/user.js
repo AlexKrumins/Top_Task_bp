@@ -6,6 +6,7 @@ const userController = require("../../controllers/userController");
 router.route("/signup")
   .post(userController.create);
 
+// Matches with "/api/user/logout"
 router.route("/logout")
   .get(userController.logout)
 
