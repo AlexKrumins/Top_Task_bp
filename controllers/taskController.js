@@ -12,7 +12,7 @@ module.exports = {
     if(!req.user) {return res.redirect("/login")}
     else{
       db.Task
-        .findById(req.params.user.id)
+        .findById(req.params.user_id)
         .then(dbModel => res.json(dbModel))
         .catch(err => res.status(422).json(err));
       }
