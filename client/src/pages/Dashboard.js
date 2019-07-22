@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from 'react-router-dom'
 import Title from "../components/Title";
 import List from "../components/List";
 import ListItem from "../components/ListItem";
@@ -21,6 +22,7 @@ class Dashboard extends Component {
   }
 
   loadTasks = () => {
+    // if (!req.user){return res.redirect("/login")}
     API.getTasks()
       .then(res =>
         this.setState({ tasks: res.data, title: "", user: "", notes: "" })

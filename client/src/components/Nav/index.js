@@ -18,6 +18,10 @@ function Nav() {
       <a className="navbar-brand" href="login">
         Login
       </a>
+      <span className="navbar-brand"> || </span>
+      <a className="navbar-brand" href="signup">
+        Create Account
+      </a>
     </nav>
   );
 }
