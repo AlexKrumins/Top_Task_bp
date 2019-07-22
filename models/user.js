@@ -26,9 +26,6 @@ module.exports = function(sequelize, DataTypes) {
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        len: [1]
-      }
     },
   });
 
@@ -38,6 +35,7 @@ module.exports = function(sequelize, DataTypes) {
   
   User.addHook("beforeCreate", function(user) {
     user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
+    console.log("user.js model user.password = " + user.password)
   });
   
   User.associate = function(models) {

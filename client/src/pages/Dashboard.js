@@ -84,12 +84,14 @@ class Dashboard extends Component {
   }
 
   loadTasks = () => {
-    if (!this.props.match.params.id){return window.location.replace("/login")}
-    API.getTasks(this.props.match.params.id)
-      .then(res =>
-        this.setState({ tasks: res.data, title: "", user: "", notes: "" })
-      )
-      .catch(err => console.log(err));
+    if (!this.props.match.params.id) { return window.location.replace("/login") }
+    else{
+      API.getTasks(this.props.match.params.id)
+        .then(res =>
+          this.setState({ tasks: res.data, title: "", user: "", notes: "" })
+        )
+        .catch(err => console.log(err));
+    }
   };
 
 

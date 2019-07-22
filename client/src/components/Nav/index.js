@@ -7,19 +7,19 @@ function Nav() {
         Top Task Time Tracker
       </a>
       <span className="navbar-brand"> || </span>
-      <a className="navbar-brand" href="dashboard">
+      <a className="navbar-brand" href="/dashboard">
         Dashboard
       </a>
       <span className="navbar-brand"> || </span>
-      <a className="navbar-brand" href="report">
+      <a className="navbar-brand" href="/report">
         Review Tasks
       </a>
       <span className="navbar-brand"> || </span>
-      <a className="navbar-brand" href="login">
+      <a className="navbar-brand" href="/login">
         Login
       </a>
       <span className="navbar-brand"> || </span>
-      <a className="navbar-brand" href="signup">
+      <a className="navbar-brand" href="/signup">
         Create Account
       </a>
     </nav>
