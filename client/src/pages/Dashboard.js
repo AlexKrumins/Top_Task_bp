@@ -5,7 +5,7 @@ import ListItem from "../components/ListItem";
 import { Col, Row, Container } from "../components/Grid";
 import { FormBtn } from "../components/Form"
 import Stopwatch from "../components/Stopwatch";
-
+import API from "../utils/API"
 class Dashboard extends Component {
   state = {
     tasks: [],
@@ -15,6 +15,18 @@ class Dashboard extends Component {
     
   };
   
+  
+  componentDidMount() {
+    this.loadTasks();
+  }
+
+  loadTasks = () => {
+    API.getTasks()
+      .then(res =>
+        this.setState({ tasks: res.data, title: "", user: "", notes: "" })
+      )
+      .catch(err => console.log(err));
+  };
 
 
   render() {

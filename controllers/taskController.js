@@ -9,11 +9,14 @@ module.exports = {
       .catch(err => res.status(422).json(err));
   },
   findById: function(req, res) {
-    db.Task
-      .findById(req.params.id)
-      .then(dbModel => res.json(dbModel))
-      .catch(err => res.status(422).json(err));
-  },
+    if(!req.user) {return res.redirect("/login")}
+    else{
+      db.Task
+        .findById(req.params.user.id)
+        .then(dbModel => res.json(dbModel))
+        .catch(err => res.status(422).json(err));
+      }
+    },
   create: function(req, res) {
     db.Task
       .create(req.body)
