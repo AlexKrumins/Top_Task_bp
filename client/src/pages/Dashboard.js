@@ -84,8 +84,8 @@ class Dashboard extends Component {
   }
 
   loadTasks = () => {
-    // if (!req.user){return res.redirect("/login")}
-    API.getTasks()
+    if (!this.props.match.params.id){return window.location.replace("/login")}
+    API.getTasks(this.props.match.params.id)
       .then(res =>
         this.setState({ tasks: res.data, title: "", user: "", notes: "" })
       )

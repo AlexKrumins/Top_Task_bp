@@ -25,7 +25,7 @@ class SignUp extends Component {
       })
         .then(res => {
           if(res.data) {
-            window.location.replace("/login");
+            window.location.replace("/dashboard/" + res.data.id);
             console.log(res);
           } else {
             console.log("Sign-up error")

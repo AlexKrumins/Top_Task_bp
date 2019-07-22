@@ -1,12 +1,9 @@
 import axios from "axios";
 
 export default {
-  // Gets all books
-  getTasks: function() {
-    return axios.get("/api/task");
-  },
-  // Gets the book with the given id
-  getTask: function(id) {
+
+  // Gets the tasks with the given user_id
+  getTasks: function(id) {
     return axios.get("/api/task/" + id);
   },
   // Deletes the book with the given id
