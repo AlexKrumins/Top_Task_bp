@@ -34,9 +34,15 @@ class Dashboard extends Component {
       <Container fluid>
         <Title>Top Task Dashboard</Title>
         <Row>
-          <List/>
-          
+          <Col size="md-4">
+            <List/>
+          </Col>
+          <Col size="md-4">
           <Stopwatch />
+          </Col>
+          <Col size="md-4">
+          <List/>
+          </Col>
         </Row>
 
       </Container>
