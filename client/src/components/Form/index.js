@@ -41,7 +41,7 @@ export function Password(props) {
   return (
     <div className="form-group">
       <label id="password">Password</label>      
-      <textarea type="password" className="form-control" placeholder="Password"{...props} />
+      <input type="password" className="form-control" placeholder="Password"{...props} />
       <small id="loginHelp" className="form-text text-muted">Use a strong password. Or don't. I'm not your mom.</small>
     </div>
   );

@@ -5,7 +5,7 @@ import List from "../components/List";
 import ListItem from "../components/ListItem";
 import { Col, Row, Container } from "../components/Grid";
 import { FormBtn } from "../components/Form"
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '../components/DND';
 import Stopwatch from "../components/Stopwatch";
 import API from "../utils/API"
 // fake data generator
@@ -78,6 +78,44 @@ class Dashboard extends Component {
     droppable2: 'selected'
   };
   
+  getList = id => this.state[this.id2List[id]];
+  onDragEnd = result => {
+    const { source, destination } = result;
+
+    // dropped outside the list
+    if (!destination) {
+        return;
+    }
+
+    if (source.droppableId === destination.droppableId) {
+        const items = reorder(
+            this.getList(source.droppableId),
+            source.index,
+            destination.index
+        );
+
+        let state = { items };
+
+        if (source.droppableId === 'droppable2') {
+            state = { selected: items };
+        }
+
+        this.setState(state);
+    } else {
+        const result = move(
+            this.getList(source.droppableId),
+            this.getList(destination.droppableId),
+            source,
+            destination
+        );
+
+        this.setState({
+            items: result.droppable,
+            selected: result.droppable2
+        });
+    }
+  };
+
   
   componentDidMount() {
     this.loadTasks();
@@ -100,15 +138,25 @@ class Dashboard extends Component {
       <Container fluid>
         <Title>Top Task Dashboard</Title>
         <Row>
-          <Col size="md-4">
-            <List/>
-          </Col>
-          <Col size="md-4">
-          <Stopwatch />
-          </Col>
-          <Col size="md-4">
-          <List/>
-          </Col>
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            <Col size="md-4">
+              <Droppable droppableId="droppable">
+                <Draggable>
+
+                </Draggable>
+              </Droppable>
+            </Col>
+            <Col size="md-4">
+            <Stopwatch />
+            </Col>
+            <Col size="md-4">
+              <Droppable droppableId="droppable2">
+                <Draggable>
+
+                </Draggable>
+              </Droppable>
+            </Col>
+          </DragDropContext>
         </Row>
 
       </Container>
