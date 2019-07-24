@@ -27,10 +27,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    _id: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    // _id: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
   });
 
   User.prototype.validPassword = function(password) {
@@ -39,7 +39,7 @@ module.exports = function(sequelize, DataTypes) {
   
   User.addHook("beforeCreate", function(user) {
     user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
-    user._id = bcrypt.hashSync(user._id, bcrypt.genSaltSync(10), null);
+    // user._id = bcrypt.hashSync(user._id, bcrypt.genSaltSync(10), null);
   });
   
   User.associate = function(models) {

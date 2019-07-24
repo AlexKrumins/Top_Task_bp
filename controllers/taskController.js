@@ -18,6 +18,7 @@ module.exports = {
       }
     },
   create: function(req, res) {
+    console.log("taskController create req.body = ", req.body.title)
     db.Task
       .create(req.body)
       .then(dbModel => res.json(dbModel))

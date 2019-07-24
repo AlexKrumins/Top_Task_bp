@@ -1,3 +1,4 @@
+
 // const mongoose = require("mongoose");
 // const Schema = mongoose.Schema;
 
@@ -41,6 +42,7 @@ module.exports = function(sequelize, DataTypes) {
   Task.associate = function(models) {
     Task.belongsTo(models.User, {
       foreignKey: {
+        type: DataTypes.STRING,
         allowNull: false
       }
     });

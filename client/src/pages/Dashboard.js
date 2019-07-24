@@ -67,7 +67,7 @@ class Dashboard extends Component {
     tasks: [],
     title: "",
     notes: "",
-    user: this.props.match.params.id,
+    user: parseInt(this.props.match.params.id),
     //dummy list for dnd
     items: getItems(10),
     selected: getItems(5, 10),
@@ -154,7 +154,7 @@ class Dashboard extends Component {
       API.saveTask({
         title: this.state.title,
         notes: this.state.notes,
-        user_id: this.state.user
+        UserId: this.state.user
       })
         .then(res => this.loadTasks())
         .catch(err => console.log(err));
