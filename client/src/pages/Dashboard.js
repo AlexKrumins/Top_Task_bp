@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 
 import Title from "../components/Title";
 import { Col, Row, Container } from "../components/Grid";
-import { FormBtn } from "../components/Form"
+import { Input, TextArea, FormBtn } from "../components/Form"
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Stopwatch from "../components/Stopwatch";
 import API from "../utils/API"
@@ -65,17 +65,20 @@ const getListStyle = isDraggingOver => ({
 class Dashboard extends Component {
   state = {
     tasks: [],
-    user: "",
     title: "",
     notes: "",
+    user: this.props.match.params.id,
     //dummy list for dnd
     items: getItems(10),
     selected: getItems(5, 10),
+    helm: [],
   };
+
 
   id2List = {
     droppable: 'items',
-    droppable2: 'selected'
+    droppable2: 'selected',
+    creationStation: 'helm',
   };
   
   getList = id => this.state[this.id2List[id]];
@@ -100,6 +103,10 @@ class Dashboard extends Component {
             state = { selected: items };
         }
 
+        if (source.droppableId === 'creationStation' && this.state.helm === []) {
+            state = { helm: items };
+        }
+
         this.setState(state);
     } else {
         const result = move(
@@ -111,7 +118,8 @@ class Dashboard extends Component {
 
         this.setState({
             items: result.droppable,
-            selected: result.droppable2
+            selected: result.droppable2,
+            helm: result.creationStation
         });
     }
   };
@@ -122,16 +130,36 @@ class Dashboard extends Component {
   }
 
   loadTasks = () => {
+    console.log(this.state.user)
     if (!this.props.match.params.id) { return window.location.replace("/login") }
     else{
       API.getTasks(this.props.match.params.id)
         .then(res =>
-          this.setState({ tasks: res.data, title: "", user: "", notes: "" })
+          this.setState({ tasks: res.data, title: "", user: this.props.match.params.id, notes: "" })
         )
         .catch(err => console.log(err));
     }
   };
 
+  handleInputChange = event => {
+    const { name, value } = event.target;
+    this.setState({
+      [name]: value
+    });
+  };
+
+  handleFormSubmit = event => {
+    event.preventDefault();
+    if (this.state.title) {
+      API.saveTask({
+        title: this.state.title,
+        notes: this.state.notes,
+        user_id: this.state.user
+      })
+        .then(res => this.loadTasks())
+        .catch(err => console.log(err));
+    }
+  };
 
   render() {
     return (
@@ -171,6 +199,27 @@ class Dashboard extends Component {
             </Col>
             <Col size="md-4">
               <Stopwatch />
+              <form>
+                <h1>Create a new task</h1>
+                <Input
+                  value={this.state.title}
+                  onChange={this.handleInputChange}
+                  name="title"
+                  placeholder="Task Name (required)"
+                />
+                <TextArea
+                  value={this.state.notes}
+                  onChange={this.handleInputChange}
+                  name="notes"
+                  placeholder="Notes (Optional)"
+                />
+                <FormBtn
+                  disabled={!this.state.title}
+                  onClick={this.handleFormSubmit}
+                >
+                  Add Task to Library
+                </FormBtn>
+              </form>
             </Col>
             <Col size="md-4">
               <Droppable droppableId="droppable2">

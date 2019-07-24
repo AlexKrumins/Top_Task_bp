@@ -8,7 +8,7 @@ router.route("/")
 
 // Matches with "/api/task/:id"
 router.route("/:id")
-  .get(taskController.findById)
+  .get(taskController.findAll)
   .put(taskController.update)
   .delete(taskController.remove);
 
