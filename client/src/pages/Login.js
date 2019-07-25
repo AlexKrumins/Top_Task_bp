@@ -25,7 +25,7 @@ class Login extends Component {
         password: this.state.password
       })
         .then(res => {
-          window.location.replace("/dashboard/" + res.data.id);
+          window.location.replace("/dashboard/" + res.data.uuid);
         })
         .catch(err => console.log(err));
     }

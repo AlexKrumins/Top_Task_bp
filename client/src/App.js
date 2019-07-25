@@ -20,9 +20,9 @@ function App() {
             <Route exact path="/" component={Login} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/dashboard" component={Login} />              
-            <Route exact path="/dashboard/:id" component={Dashboard} />              
+            <Route exact path="/dashboard/:uuid" component={Dashboard} />              
             <Route exact path="/signup" component={SignUp} />
-            <Route exact path="/report/:id" component={Report} />
+            <Route exact path="/report/:uuid" component={Report} />
             <Route component={NoMatch} />
           </Switch>
         </Wrapper>

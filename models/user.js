@@ -11,7 +11,7 @@
 // const User = mongoose.model("User", userSchema);
 
 // module.exports = User;
-var bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcrypt-nodejs");
 
 module.exports = function(sequelize, DataTypes) {
   const User = sequelize.define("User", {
@@ -27,8 +27,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    uid: {
+    uuid: {
       type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
       primaryKey: true,
     },
   });
@@ -39,14 +41,13 @@ module.exports = function(sequelize, DataTypes) {
   
   User.addHook("beforeCreate", function(user) {
     user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
-    user.uid = bcrypt.genSaltSync(10, null);
   });
   
   User.associate = function(models) {
     // Associating Chef with Burgers
     // When an Chef is deleted, also delete any associated Burgers
     User.hasMany(models.Task, {
-      foreignKey: "uid",
+      foreignKey: "uuid",
       onDelete: "cascade"
     });
   };

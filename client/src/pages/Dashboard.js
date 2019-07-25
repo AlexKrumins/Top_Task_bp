@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Redirect } from 'react-router-dom'
-import ReactDOM from 'react-dom';
+// import { Redirect } from 'react-router-dom'
+// import ReactDOM from 'react-dom';
 
 import Title from "../components/Title";
 import { Col, Row, Container } from "../components/Grid";
@@ -67,19 +67,24 @@ class Dashboard extends Component {
     tasks: [],
     title: "",
     notes: "",
-    user: parseInt(this.props.match.params.id),
+    user: this.props.match.params.uuid,
     //dummy list for dnd
     items: getItems(10),
     selected: getItems(5, 10),
     helm: [],
   };
-
-
+  
+  
   id2List = {
     droppable: 'items',
     droppable2: 'selected',
     creationStation: 'helm',
   };
+  
+    
+    componentDidMount() {
+      this.loadTasks();
+    }
   
   getList = id => this.state[this.id2List[id]];
   onDragEnd = result => {
@@ -124,18 +129,13 @@ class Dashboard extends Component {
     }
   };
 
-  
-  componentDidMount() {
-    this.loadTasks();
-  }
-
   loadTasks = () => {
     console.log(this.state.user)
-    if (!this.props.match.params.id) { return window.location.replace("/login") }
+    if (!this.props.match.params.uuid) { return window.location.replace("/login") }
     else{
-      API.getTasks(this.props.match.params.id)
+      API.getTasks(this.props.match.params.uuid)
         .then(res =>
-          this.setState({ tasks: res.data, title: "", user: this.props.match.params.id, notes: "" })
+          this.setState({ tasks: res.data, title: "", user: this.props.match.params.uuid, notes: "" })
         )
         .catch(err => console.log(err));
     }
@@ -154,7 +154,7 @@ class Dashboard extends Component {
       API.saveTask({
         title: this.state.title,
         notes: this.state.notes,
-        UserId: this.state.user
+        uuid: this.state.user
       })
         .then(res => this.loadTasks())
         .catch(err => console.log(err));

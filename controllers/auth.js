@@ -11,7 +11,7 @@ module.exports = {
     else {
       res.json({
         email: req.user.email,
-        id: req.user.id
+        uuid: req.user.id
       })
     };
   },

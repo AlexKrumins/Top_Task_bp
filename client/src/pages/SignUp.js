@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import {FormBtn, Email, Password } from "../components/Form";
 
 import API from "../utils/API";
+const uuidv4 = require("uuid/v4");
 
 class SignUp extends Component {
   state = {
     email: "",
     password: "",
+    uuid: uuidv4(),
   };
 
   handleInputChange = event => {
@@ -21,11 +23,12 @@ class SignUp extends Component {
     if (this.state.email && this.state.password) {
       API.signupUser({
         email: this.state.email,
-        password: this.state.password
+        password: this.state.password,
+        uuid: this.state.uuid,
       })
         .then(res => {
           if(res.data) {
-            window.location.replace("/dashboard/" + res.data.id);
+            window.location.replace("/dashboard/" + res.data.uuid);
             console.log(res);
           } else {
             console.log("Sign-up error")
