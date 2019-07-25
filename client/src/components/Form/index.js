@@ -19,6 +19,15 @@ export function TextArea(props) {
   );
 }
 
+export function Checkbox(props) {
+  return (
+    <div className="form-group">
+      <label>{props.children}</label>
+      <input type="checkbox" className="form-control" id="favorite" {...props}/>
+    </div>
+  );
+}
+
 export function FormBtn(props) {
   return (
     <button className="button" {...props} style={{ float: "right", marginBottom: 10 }} >

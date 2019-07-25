@@ -72,6 +72,7 @@ class Dashboard extends Component {
     items: getItems(10),
     selected: getItems(5, 10),
     helm: [],
+    favorite: false,
   };
   
   
@@ -189,7 +190,7 @@ class Dashboard extends Component {
                                 snapshot.isDragging,
                                 provided.draggableProps.style
                             )}>
-                            {item.content}
+                            {item.title}
                           </div>
                           )}
                       </Draggable>
@@ -215,6 +216,15 @@ class Dashboard extends Component {
                   name="notes"
                   placeholder="Notes (Optional)"
                 />
+                <label>
+                  <input
+                    name="favorite"
+                    type="checkbox"
+                    checked={this.state.favorite}
+                    onChange={this.handleInputChange}
+                  />
+                   Add to Favorites
+                </label>
                 <FormBtn
                   disabled={!this.state.title}
                   onClick={this.handleFormSubmit}
@@ -243,7 +253,7 @@ class Dashboard extends Component {
                                   snapshot.isDragging,
                                   provided.draggableProps.style
                               )}>
-                              {item.content}
+                              {item.contents}
                             </div>
                             )}
                         </Draggable>

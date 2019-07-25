@@ -36,6 +36,10 @@ module.exports = function(sequelize, DataTypes) {
     taskCreated: {
       type: DataTypes.DATE, 
       default: null,
+    },
+    favorite: {
+      type: DataTypes.BOOLEAN,
+      default: false,
     }
   });
 
