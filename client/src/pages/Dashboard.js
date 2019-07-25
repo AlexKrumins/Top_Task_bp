@@ -67,7 +67,7 @@ class Dashboard extends Component {
     tasks: [],
     title: "",
     notes: "",
-    user: this.props.match.params.uuid,
+    uuid: this.props.match.params.uuid,
     //dummy list for dnd
     items: getItems(10),
     selected: getItems(5, 10),
@@ -82,9 +82,9 @@ class Dashboard extends Component {
   };
   
     
-    componentDidMount() {
-      this.loadTasks();
-    }
+  componentDidMount = () => {
+    this.loadTasks();
+  }
   
   getList = id => this.state[this.id2List[id]];
   onDragEnd = result => {
@@ -130,15 +130,17 @@ class Dashboard extends Component {
   };
 
   loadTasks = () => {
-    console.log(this.state.user)
-    if (!this.props.match.params.uuid) { return window.location.replace("/login") }
+    console.log(this.state.uuid)
+    if (!this.state.uuid) { return window.location.replace("/login") }
     else{
-      API.getTasks(this.props.match.params.uuid)
-        .then(res =>
+      API.getTasks(this.state.uuid)
+        .then(res => {
           this.setState({ tasks: res.data, title: "", user: this.props.match.params.uuid, notes: "" })
-        )
-        .catch(err => console.log(err));
-    }
+          console.log("tasks", this.state.tasks)
+        }
+          )
+          .catch(err => console.log(err));
+        }
   };
 
   handleInputChange = event => {
@@ -154,7 +156,7 @@ class Dashboard extends Component {
       API.saveTask({
         title: this.state.title,
         notes: this.state.notes,
-        uuid: this.state.user
+        UserUuid: this.state.uuid
       })
         .then(res => this.loadTasks())
         .catch(err => console.log(err));

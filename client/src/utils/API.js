@@ -3,8 +3,8 @@ import axios from "axios";
 export default {
 
   // Gets the tasks with the given user_id
-  getTasks: function(id) {
-    return axios.get("/api/task/" + id);
+  getTasks: function(uuid) {
+    return axios.get("/api/task/" + uuid);
   },
   // Deletes the book with the given id
   deleteTask: function(id) {

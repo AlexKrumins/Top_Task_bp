@@ -3,11 +3,11 @@ const taskController = require("../../controllers/taskController");
 
 // Matches with "/api/task"
 router.route("/")
-  .get(taskController.findById)
+  // .get(taskController.findById)
   .post(taskController.create);
 
 // Matches with "/api/task/:id"
-router.route("/:id")
+router.route("/:uuid")
   .get(taskController.findAll)
   .put(taskController.update)
   .delete(taskController.remove);
