@@ -72,7 +72,7 @@ class Dashboard extends Component {
     items: getItems(10),
     selected: getItems(5, 10),
     helm: [],
-    favorite: false,
+    isfavorite: false,
   };
   
   
@@ -145,7 +145,10 @@ class Dashboard extends Component {
   };
 
   handleInputChange = event => {
-    const { name, value } = event.target;
+    const target = event.target
+    const value = target.type === "checkbox" ? target.checked : target.value
+    const name = target.name;
+    console.log(name, value)
     this.setState({
       [name]: value
     });
@@ -157,7 +160,8 @@ class Dashboard extends Component {
       API.saveTask({
         title: this.state.title,
         notes: this.state.notes,
-        UserUuid: this.state.uuid
+        UserUuid: this.state.uuid,
+        favorite: this.state.isfavorite,
       })
         .then(res => this.loadTasks())
         .catch(err => console.log(err));
@@ -218,9 +222,9 @@ class Dashboard extends Component {
                 />
                 <label>
                   <input
-                    name="favorite"
+                    name="isfavorite"
                     type="checkbox"
-                    checked={this.state.favorite}
+                    value={this.state.isfavorite}
                     onChange={this.handleInputChange}
                   />
                    Add to Favorites
