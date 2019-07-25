@@ -42,7 +42,7 @@ module.exports = function(sequelize, DataTypes) {
   Task.associate = function(models) {
     Task.belongsTo(models.User, {
       foreignKey: {
-        type: DataTypes.STRING,
+        foreignKey: "uid",
         allowNull: false
       }
     });
