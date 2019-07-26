@@ -55,11 +55,30 @@ const getItemStyle = (isDragging, draggableStyle) => ({
     // styles we need to apply on draggables
     ...draggableStyle
 });
+const getHItemStyle = (isDragging, draggableStyle) => ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: 'none',
+    padding: grid * 2,
+    margin: `0 ${grid}px 0 0`,
+
+    // change background colour if dragging
+    background: isDragging ? 'lightgreen' : 'grey',
+
+    // styles we need to apply on draggables
+    ...draggableStyle
+});
 
 const getListStyle = isDraggingOver => ({
     background: isDraggingOver ? 'lightblue' : 'lightgrey',
     padding: grid,
     width: 250
+});
+
+const getHListStyle = isDraggingOver => ({
+    background: isDraggingOver ? 'lightblue' : 'lightgrey',
+    display: 'flex',
+    padding: grid,
+    overflow: 'auto',
 });
 
 class Dashboard extends Component {
@@ -78,7 +97,8 @@ class Dashboard extends Component {
   
   
   id2List = {
-    droppable: 'items',
+    droppable: 'tasks',
+    bottom: 'items',
     favorites: 'selected',
     creationStation: 'helm',
   };
@@ -112,6 +132,10 @@ class Dashboard extends Component {
 
         if (source.droppableId === 'creationStation' && this.state.helm === []) {
             state = { helm: tasks };
+        }
+        
+        if (source.droppableId === 'bottom') {
+            state = { items: tasks };
         }
 
         this.setState(state);
@@ -174,8 +198,8 @@ class Dashboard extends Component {
     return (
       <Container fluid>
         <Title>Top Task Dashboard</Title>
-        <Row>
           <DragDropContext onDragEnd={this.onDragEnd}>
+        <Row>
             <Col size="md-4">
               <Droppable droppableId="droppable">
                 {(provided, snapshot) => (
@@ -269,8 +293,38 @@ class Dashboard extends Component {
                   )}
                 </Droppable>
             </Col>
-          </DragDropContext>
         </Row>
+        <Row>
+        <Droppable droppableId="bottom" direction="horizontal">
+          {(provided, snapshot) => (
+            <div
+            ref={provided.innerRef}
+            style={getHListStyle(snapshot.isDraggingOver)}
+            {...provided.droppableProps}
+            >
+              {this.state.items.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                    ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      style={getHItemStyle(
+                        snapshot.isDragging,
+                        provided.draggableProps.style
+                        )}
+                        >
+                      {item.content}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+        </Row>
+      </DragDropContext>
 
       </Container>
     );
