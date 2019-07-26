@@ -65,6 +65,7 @@ const getListStyle = isDraggingOver => ({
 class Dashboard extends Component {
   state = {
     tasks: [],
+    favorites: [],
     title: "",
     notes: "",
     uuid: this.props.match.params.uuid,
@@ -78,7 +79,7 @@ class Dashboard extends Component {
   
   id2List = {
     droppable: 'items',
-    droppable2: 'selected',
+    favorites: 'selected',
     creationStation: 'helm',
   };
   
@@ -97,20 +98,20 @@ class Dashboard extends Component {
     }
 
     if (source.droppableId === destination.droppableId) {
-        const items = reorder(
+        const tasks = reorder(
             this.getList(source.droppableId),
             source.index,
             destination.index
         );
 
-        let state = { items };
+        let state = { tasks };
 
-        if (source.droppableId === 'droppable2') {
-            state = { selected: items };
+        if (source.droppableId === 'favorites') {
+            state = { selected: tasks };
         }
 
         if (source.droppableId === 'creationStation' && this.state.helm === []) {
-            state = { helm: items };
+            state = { helm: tasks };
         }
 
         this.setState(state);
@@ -123,8 +124,8 @@ class Dashboard extends Component {
         );
 
         this.setState({
-            items: result.droppable,
-            selected: result.droppable2,
+            tasks: result.droppable,
+            favorites: result.favorites,
             helm: result.creationStation
         });
     }
@@ -135,13 +136,14 @@ class Dashboard extends Component {
     if (!this.state.uuid) { return window.location.replace("/login") }
     else{
       API.getTasks(this.state.uuid)
-        .then(res => {
-          this.setState({ tasks: res.data, title: "", user: this.props.match.params.uuid, notes: "" })
-          console.log("tasks", this.state.tasks)
-        }
-          )
-          .catch(err => console.log(err));
-        }
+      .then(res => {
+        let faves = res.data.filter(task => {return task.favorite})
+        this.setState({ tasks: res.data, favorites: faves, title: "", user: this.props.match.params.uuid, notes: "" })
+        console.log("tasks", this.state.tasks)
+        console.log("favorites", this.state.favorites)
+      })
+      .catch(err => console.log(err));
+    }
   };
 
   handleInputChange = event => {
@@ -180,10 +182,10 @@ class Dashboard extends Component {
                   <div
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}>
-                    {this.state.items.map((item, index) => (
+                    {this.state.tasks.map((task, index) => (
                       <Draggable
-                        key={item.id}
-                        draggableId={item.id}
+                        key={task.id}
+                        draggableId={task.id}
                         index={index}>
                         {(provided, snapshot) => (
                           <div
@@ -194,7 +196,7 @@ class Dashboard extends Component {
                                 snapshot.isDragging,
                                 provided.draggableProps.style
                             )}>
-                            {item.title}
+                            {task.title}
                           </div>
                           )}
                       </Draggable>
@@ -238,15 +240,15 @@ class Dashboard extends Component {
               </form>
             </Col>
             <Col size="md-4">
-              <Droppable droppableId="droppable2">
+              <Droppable droppableId="favorites">
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
                       style={getListStyle(snapshot.isDraggingOver)}>
-                      {this.state.selected.map((item, index) => (
+                      {this.state.selected.map((task, index) => (
                         <Draggable
-                          key={item.id}
-                          draggableId={item.id}
+                          key={task.id}
+                          draggableId={task.id}
                           index={index}>
                           {(provided, snapshot) => (
                             <div
@@ -257,7 +259,7 @@ class Dashboard extends Component {
                                   snapshot.isDragging,
                                   provided.draggableProps.style
                               )}>
-                              {item.contents}
+                              {task.title}
                             </div>
                             )}
                         </Draggable>
