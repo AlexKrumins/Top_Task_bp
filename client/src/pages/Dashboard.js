@@ -99,7 +99,7 @@ class Dashboard extends Component {
   id2List = {
     droppable: 'tasks',
     bottom: 'items',
-    favorites: 'selected',
+    favorites: 'favorites',
     creationStation: 'helm',
   };
   
@@ -127,12 +127,9 @@ class Dashboard extends Component {
         let state = { tasks };
 
         if (source.droppableId === 'favorites') {
-            state = { selected: tasks };
+            state = { favorites: tasks };
         }
 
-        if (source.droppableId === 'creationStation' && this.state.helm === []) {
-            state = { helm: tasks };
-        }
         
         if (source.droppableId === 'bottom') {
             state = { items: tasks };
@@ -162,7 +159,8 @@ class Dashboard extends Component {
       API.getTasks(this.state.uuid)
       .then(res => {
         let faves = res.data.filter(task => {return task.favorite})
-        this.setState({ tasks: res.data, favorites: faves, title: "", user: this.props.match.params.uuid, notes: "" })
+        let todo = res.data.filter(task => {return !task.favorite})
+        this.setState({ tasks: todo, favorites: faves, title: "", user: this.props.match.params.uuid, notes: "" })
         console.log("tasks", this.state.tasks)
         console.log("favorites", this.state.favorites)
       })
@@ -189,8 +187,8 @@ class Dashboard extends Component {
         UserUuid: this.state.uuid,
         favorite: this.state.isfavorite,
       })
-        .then(res => this.loadTasks())
-        .catch(err => console.log(err));
+      .then(res => this.loadTasks())
+      .catch(err => console.log(err));
     }
   };
 
@@ -206,7 +204,8 @@ class Dashboard extends Component {
                   <div
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}>
-                    {this.state.tasks.map((task, index) => (
+                    {(this.state.tasks.length > 0) ? (
+                      this.state.tasks.map((task, index) => (
                       <Draggable
                         key={task.id}
                         draggableId={task.id}
@@ -220,11 +219,16 @@ class Dashboard extends Component {
                                 snapshot.isDragging,
                                 provided.draggableProps.style
                             )}>
-                            {task.title}
+                            {task.title}  
                           </div>
-                          )}
+                        )}
                       </Draggable>
-                    ))}
+                      ))) : (
+                        <div>
+                          Drag tasks to this bar
+                        </div>
+                      )
+                    };
                     {provided.placeholder}
                   </div>
                 )}
@@ -269,7 +273,8 @@ class Dashboard extends Component {
                     <div
                       ref={provided.innerRef}
                       style={getListStyle(snapshot.isDraggingOver)}>
-                      {this.state.selected.map((task, index) => (
+                      {this.state.favorites.length > 0 &&
+                        this.state.favorites.map((task, index) => (
                         <Draggable
                           key={task.id}
                           draggableId={task.id}
@@ -302,7 +307,8 @@ class Dashboard extends Component {
             style={getHListStyle(snapshot.isDraggingOver)}
             {...provided.droppableProps}
             >
-              {this.state.items.map((item, index) => (
+              {this.state.items.length > 0 &&
+                this.state.items.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
                     <div
