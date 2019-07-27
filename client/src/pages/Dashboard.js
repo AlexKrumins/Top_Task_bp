@@ -83,25 +83,23 @@ const getHListStyle = isDraggingOver => ({
 
 class Dashboard extends Component {
   state = {
-    tasks: [],
-    active: [],
-    favorites: [],
+    left: [],
+    right: [],
+    bottom: [],
     title: "",
     notes: "",
     uuid: this.props.match.params.uuid,
-    //dummy list for dnd
-    items: [22,33,44,55,66,77,88,99],
-    selected: getItems(5, 10),
-    helm: [],
+
+    // helm: [],
     isfavorite: false,
     isActive: false,
   };
   
   
   id2List = {
-    left: 'active',
-    right: 'favorites',
-    bottom: 'tasks',
+    left: 'left',
+    right: 'right',
+    bottom: 'bottom',
     creationStation: 'helm',
   };
   
@@ -129,30 +127,38 @@ class Dashboard extends Component {
 
         let state = { tasks };
 
-        if (source.droppableId === 'right') {
-            state = { favorites: tasks };
-        }
         
         if (source.droppableId === 'left') {
-            state = { active: tasks };
+          state = { left: tasks };
+        }
+        
+        if (source.droppableId === 'right') {
+          state = { right: tasks };
+        }
+        
+        if (source.droppableId === 'bottom') {
+            state = { bottom: tasks };
         }
 
         this.setState(state);
     } else {
-        const result = move(
-            this.getList(source.droppableId),
-            this.getList(destination.droppableId),
-            source,
-            destination
-        );
+      const result = move(
+          this.getList(source.droppableId),
+          this.getList(destination.droppableId),
+          source,
+          destination
+      );
 
-        this.setState({
-            active: result.left,
-            favorites: result.right,
-            helm: result.creationStation,
-            tasks: result.bottom
-        });
-    }
+      if(result.left){
+        this.setState({left: result.left})
+      };
+        if(result.right){
+        this.setState({right: result.right})
+      };
+      if(result.bottom){
+        this.setState({bottom: result.bottom})
+      };
+    };
   };
 
   loadTasks = () => {
@@ -165,22 +171,21 @@ class Dashboard extends Component {
         let faves = res.data.filter(task => {return (task.favorite && !task.active)})
         let everythingElse = res.data.filter(task => {return (!task.favorite && !task.active)})
         this.setState({ 
-          active: todo, 
-          favorites: faves, 
-          tasks: everythingElse, 
+          left: todo, 
+          right: faves, 
+          bottom: everythingElse, 
           title: "", 
           notes: "",
           user: this.props.match.params.uuid,
         })
-          console.log("tasks", this.state.tasks)
-          console.log("favorites", this.state.favorites)
-          console.log("active", this.state.active)
+          console.log("bottom", this.state.bottom)
+          console.log("right", this.state.right)
+          console.log("left", this.state.left)
       })
       .catch(err => console.log(err));
     }
   };
 
-y
 
   handleInputChange = event => {
     const target = event.target
@@ -220,8 +225,8 @@ y
                   <div
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}>
-                    {(this.state.active.length > 0) ? (
-                      this.state.active.map((task, index) => (
+                    {(this.state.left.length > 0) ? (
+                      this.state.left.map((task, index) => (
                       <Draggable
                         key={task.id}
                         draggableId={task.id}
@@ -306,8 +311,8 @@ y
                     <div
                       ref={provided.innerRef}
                       style={getListStyle(snapshot.isDraggingOver)}>
-                      {(this.state.favorites.length > 0) ? (
-                        this.state.favorites.map((task, index) => (
+                      {(this.state.right.length > 0) ? (
+                        this.state.right.map((task, index) => (
                         <Draggable
                           key={task.id}
                           draggableId={task.id}
@@ -347,8 +352,8 @@ y
               ref={provided.innerRef}
               style={getHListStyle(snapshot.isDraggingOver)}
               >
-                {(this.state.tasks.length > 0) ? (
-                  this.state.tasks.map((task, index) => (
+                {(this.state.bottom.length > 0) ? (
+                  this.state.bottom.map((task, index) => (
                   <Draggable 
                     key={task.id} 
                     draggableId={task.id} 
