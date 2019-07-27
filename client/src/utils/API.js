@@ -10,6 +10,9 @@ export default {
   deleteTask: function(id) {
     return axios.delete("/api/task/" + id);
   },
+  updateTask: function(taskData) {
+    return axios.put("/api/task/" + taskData.id);
+  },
   // Saves a book to the database
   saveTask: function(taskData) {
     return axios.post("/api/task", taskData);

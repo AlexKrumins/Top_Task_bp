@@ -111,9 +111,10 @@ class Dashboard extends Component {
   }
   
   getList = id => this.state[this.id2List[id]];
-  onDragEnd = result => {
-    const { source, destination } = result;
 
+  onDragEnd = (result) => {
+    const { source, destination } = result;
+    console.log("onDrageEnd result", result)
     // dropped outside the list
     if (!destination) {
         return;
@@ -131,7 +132,6 @@ class Dashboard extends Component {
         if (source.droppableId === 'right') {
             state = { favorites: tasks };
         }
-
         
         if (source.droppableId === 'left') {
             state = { active: tasks };
@@ -179,6 +179,8 @@ class Dashboard extends Component {
       .catch(err => console.log(err));
     }
   };
+
+y
 
   handleInputChange = event => {
     const target = event.target
