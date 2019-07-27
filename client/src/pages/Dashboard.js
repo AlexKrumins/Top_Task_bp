@@ -84,6 +84,7 @@ const getHListStyle = isDraggingOver => ({
 class Dashboard extends Component {
   state = {
     tasks: [],
+    active: [],
     favorites: [],
     title: "",
     notes: "",
@@ -93,13 +94,14 @@ class Dashboard extends Component {
     selected: getItems(5, 10),
     helm: [],
     isfavorite: false,
+    isActive: false,
   };
   
   
   id2List = {
-    droppable: 'tasks',
-    bottom: 'items',
-    favorites: 'favorites',
+    left: 'active',
+    right: 'favorites',
+    bottom: 'tasks',
     creationStation: 'helm',
   };
   
@@ -126,13 +128,13 @@ class Dashboard extends Component {
 
         let state = { tasks };
 
-        if (source.droppableId === 'favorites') {
+        if (source.droppableId === 'right') {
             state = { favorites: tasks };
         }
 
         
-        if (source.droppableId === 'bottom') {
-            state = { items: tasks };
+        if (source.droppableId === 'left') {
+            state = { active: tasks };
         }
 
         this.setState(state);
@@ -145,10 +147,10 @@ class Dashboard extends Component {
         );
 
         this.setState({
-            tasks: result.left,
+            active: result.left,
             favorites: result.right,
             helm: result.creationStation,
-            items: result.bottom
+            tasks: result.bottom
         });
     }
   };
@@ -159,11 +161,20 @@ class Dashboard extends Component {
     else{
       API.getTasks(this.state.uuid)
       .then(res => {
-        let faves = res.data.filter(task => {return task.favorite})
-        let todo = res.data.filter(task => {return !task.favorite})
-        this.setState({ tasks: todo, favorites: faves, title: "", user: this.props.match.params.uuid, notes: "" })
-        console.log("tasks", this.state.tasks)
-        console.log("favorites", this.state.favorites)
+        let todo = res.data.filter(task => {return (task.active)})
+        let faves = res.data.filter(task => {return (task.favorite && !task.active)})
+        let everythingElse = res.data.filter(task => {return (!task.favorite && !task.active)})
+        this.setState({ 
+          active: todo, 
+          favorites: faves, 
+          tasks: everythingElse, 
+          title: "", 
+          notes: "",
+          user: this.props.match.params.uuid,
+        })
+          console.log("tasks", this.state.tasks)
+          console.log("favorites", this.state.favorites)
+          console.log("active", this.state.active)
       })
       .catch(err => console.log(err));
     }
@@ -187,6 +198,7 @@ class Dashboard extends Component {
         notes: this.state.notes,
         UserUuid: this.state.uuid,
         favorite: this.state.isfavorite,
+        active: this.state.isActive
       })
       .then(res => this.loadTasks())
       .catch(err => console.log(err));
@@ -200,13 +212,14 @@ class Dashboard extends Component {
           <DragDropContext onDragEnd={this.onDragEnd}>
         <Row>
             <Col size="md-4">
+            <h2>Today's Tasks</h2>
               <Droppable droppableId="left">
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}>
-                    {(this.state.tasks.length > 0) ? (
-                      this.state.tasks.map((task, index) => (
+                    {(this.state.active.length > 0) ? (
+                      this.state.active.map((task, index) => (
                       <Draggable
                         key={task.id}
                         draggableId={task.id}
@@ -251,24 +264,41 @@ class Dashboard extends Component {
                   name="notes"
                   placeholder="Notes (Optional)"
                 />
-                <label>
-                  <input
-                    name="isfavorite"
-                    type="checkbox"
-                    value={this.state.isfavorite}
-                    onChange={this.handleInputChange}
-                  />
-                   Add to Favorites
-                </label>
-                <FormBtn
-                  disabled={!this.state.title}
-                  onClick={this.handleFormSubmit}
-                >
-                  Add Task to Library
-                </FormBtn>
+                <Row>
+                  <Col size="md-6">
+                    <label>
+                      <input
+                        name="isActive"
+                        type="checkbox"
+                        value={this.state.isActive}
+                        onChange={this.handleInputChange}
+                      />
+                      Add to Today's Tasks
+                    </label>
+                    <br></br>
+                    <label>
+                      <input
+                        name="isfavorite"
+                        type="checkbox"
+                        value={this.state.isfavorite}
+                        onChange={this.handleInputChange}
+                      />
+                      Add to Favorites
+                    </label>
+                  </Col>
+                  <Col size="md-6">
+                    <FormBtn
+                      disabled={!this.state.title}
+                      onClick={this.handleFormSubmit}
+                    >
+                      Add Task to Library
+                    </FormBtn>
+                  </Col>
+                </Row> 
               </form>
             </Col>
             <Col size="md-4">
+            <h2>Favorites</h2>
               <Droppable droppableId="right">
                   {(provided, snapshot) => (
                     <div
@@ -306,41 +336,44 @@ class Dashboard extends Component {
             </Col>
         </Row>
         <Row>
-        <Droppable droppableId="bottom" direction="horizontal">
-          {(provided, snapshot) => (
-            <div
-            ref={provided.innerRef}
-            style={getHListStyle(snapshot.isDraggingOver)}
-            >
-              {(this.state.items.length > 0) ? (
-                this.state.items.map((item, index) => (
-                <Draggable 
-                  key={item} 
-                  draggableId={item} 
-                  index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getHItemStyle(
-                        snapshot.isDragging,
-                        provided.draggableProps.style
-                      )}>
-                      {item}
+          <h2>Recently Added Tasks</h2>
+        </Row>
+        <Row>
+          <Droppable droppableId="bottom" direction="horizontal">
+            {(provided, snapshot) => (
+              <div
+              ref={provided.innerRef}
+              style={getHListStyle(snapshot.isDraggingOver)}
+              >
+                {(this.state.tasks.length > 0) ? (
+                  this.state.tasks.map((task, index) => (
+                  <Draggable 
+                    key={task.id} 
+                    draggableId={task.id} 
+                    index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={getHItemStyle(
+                          snapshot.isDragging,
+                          provided.draggableProps.style
+                        )}>
+                        {task.title}
+                      </div>
+                    )}
+                  </Draggable>
+                  ))) : (
+                    <div>
+                      Start Adding Tasks to your library. They'll appear down here.
                     </div>
-                  )}
-                </Draggable>
-                ))) : (
-                  <div>
-                    Start Adding Tasks to your library. They'll appear down here.
-                  </div>
-                )
-              }
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+                  )
+                }
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
         </Row>
       </DragDropContext>
 

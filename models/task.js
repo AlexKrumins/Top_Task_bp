@@ -40,6 +40,10 @@ module.exports = function(sequelize, DataTypes) {
     favorite: {
       type: DataTypes.BOOLEAN,
       default: false,
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      default: false,
     }
   });
 
