@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { DeleteBtn } from "../Form";
 import { Draggable } from 'react-beautiful-dnd';
 
@@ -19,7 +18,6 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 function ListItem(props) {
-  console.log("props",props)
   return(
     <Draggable
       draggableId={props.draggableId}

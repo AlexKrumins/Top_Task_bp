@@ -1,21 +1,18 @@
+
 import React, { Component } from "react";
 // import { Redirect } from 'react-router-dom'
 // import ReactDOM from 'react-dom';
 
 import Title from "../components/Title";
 import { Col, Row, Container } from "../components/Grid";
-import { Input, TextArea, FormBtn, DeleteBtn } from "../components/Form"
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Input, TextArea, FormBtn } from "../components/Form"
+import { DragDropContext } from 'react-beautiful-dnd';
 import Stopwatch from "../components/Stopwatch";
 import API from "../utils/API"
+import List from '../components/List';
 import ListItem from '../components/ListItem';
+import HList from '../components/HList';
 import HListItem from '../components/HListItem';
-// fake data generator
-const getItems = (count, offset = 0) =>
-    Array.from({ length: count }, (v, k) => k).map(k => ({
-        id: `item-${k + offset}`,
-        content: `item ${k + offset}`
-    }));
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -42,46 +39,6 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 
     return result;
 };
-
-const grid = 8;
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-    // some basic styles to make the items look a bit nicer
-    userSelect: 'none',
-    padding: grid * 2,
-    margin: `0 0 ${grid}px 0`,
-
-    // change background colour if dragging
-    background: isDragging ? 'lightgreen' : 'grey',
-
-    // styles we need to apply on draggables
-    ...draggableStyle
-});
-const getHItemStyle = (isDragging, draggableStyle) => ({
-    // some basic styles to make the items look a bit nicer
-    userSelect: 'none',
-    padding: grid * 2,
-    margin: `0 ${grid}px 0 0`,
-
-    // change background colour if dragging
-    background: isDragging ? 'lightgreen' : 'grey',
-
-    // styles we need to apply on draggables
-    ...draggableStyle
-});
-
-const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'lightblue' : 'lightgrey',
-    padding: grid,
-    width: 250
-});
-
-const getHListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'lightblue' : 'lightgrey',
-    display: 'flex',
-    padding: grid,
-    overflow: 'auto',
-});
 
 class Dashboard extends Component {
   state = {
@@ -227,30 +184,22 @@ class Dashboard extends Component {
         <Row>
             <Col size="md-4">
             <h2>Today's Tasks</h2>
-              <Droppable droppableId="left">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}>
-                    {(this.state.left.length >0 ) ? (
-                      this.state.left.map((task, index) => (
-                      <ListItem
-                        key={task.id}
-                        draggableId={task.id}
-                        title={task.title}
-                        index={index}
-                        deleteTask={this.deleteTask}
-                      />
-                      ))) : (
-                        <div>
-                          Create a plan by dragging tasks to this bar
-                        </div>
-                      )
-                    }
-                    {provided.placeholder}
+              <List droppableId="left">
+                {(this.state.left.length >0 ) ? (
+                  this.state.left.map((task, index) => (
+                  <ListItem
+                    key={task.id}
+                    draggableId={task.id}
+                    title={task.title}
+                    index={index}
+                    deleteTask={this.deleteTask}
+                  />
+                  ))) : (
+                  <div>
+                    Create a plan by dragging tasks to this bar
                   </div>
                 )}
-              </Droppable>
+              </List>
             </Col>
             <Col size="md-4">
               <Stopwatch />
@@ -303,45 +252,10 @@ class Dashboard extends Component {
             </Col>
             <Col size="md-4">
             <h2>Favorites</h2>
-              <Droppable droppableId="right">
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      style={getListStyle(snapshot.isDraggingOver)}>
-                      {(this.state.right.length > 0) ? (
-                        this.state.right.map((task, index) => (
-                          <ListItem
-                          key={task.id}
-                          draggableId={task.id}
-                          title={task.title}
-                          index={index}
-                          deleteTask={this.deleteTask}
-                        />
-                        ))) : (
-                          <div>
-                          Drag tasks here to add them to your favorites
-                          </div>
-                        )
-                      }
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-            </Col>
-        </Row>
-        <Row>
-          <h2>Recently Added Tasks</h2>
-        </Row>
-        <Row>
-          <Droppable droppableId="bottom" direction="horizontal">
-            {(provided, snapshot) => (
-              <div
-              ref={provided.innerRef}
-              style={getHListStyle(snapshot.isDraggingOver)}
-              >
-                {(this.state.bottom.length > 0) ? (
-                  this.state.bottom.map((task, index) => (
-                    <HListItem
+              <List droppableId="right">
+                {(this.state.right.length > 0) ? (
+                  this.state.right.map((task, index) => (
+                    <ListItem
                     key={task.id}
                     draggableId={task.id}
                     title={task.title}
@@ -349,15 +263,33 @@ class Dashboard extends Component {
                     deleteTask={this.deleteTask}
                   />
                   ))) : (
-                    <div>
-                      Start Adding Tasks to your library. They'll appear down here.
-                    </div>
-                  )
-                }
-                {provided.placeholder}
+                  <div>
+                    Drag tasks here to add them to your favorites
+                  </div>
+                )}
+              </List>
+            </Col>
+        </Row>
+        <Row>
+          <h2>Recently Added Tasks</h2>
+        </Row>
+        <Row>
+          <HList droppableId="bottom" direction="horizontal">
+            {(this.state.bottom.length > 0) ? (
+              this.state.bottom.map((task, index) => (
+              <HListItem
+                key={task.id}
+                draggableId={task.id}
+                title={task.title}
+                index={index}
+                deleteTask={this.deleteTask}
+              />
+              ))) : (
+              <div>
+                Start Adding Tasks to your library. They'll appear down here.
               </div>
             )}
-          </Droppable>
+          </HList>
         </Row>
       </DragDropContext>
 
