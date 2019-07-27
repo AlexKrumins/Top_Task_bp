@@ -5,3 +5,9 @@
   color: #2A77AE;
   margin-bottom: 50px;
 }
+
+.delete-btn {
+  float: right;
+  color: #e74944;
+}
+

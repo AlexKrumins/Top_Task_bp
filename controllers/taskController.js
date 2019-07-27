@@ -32,8 +32,7 @@ module.exports = {
   },
   remove: function(req, res) {
     db.Task
-      .findById({ _id: req.params.id })
-      .then(dbModel => dbModel.remove())
+      .destroy({ where: {id: req.params.id }})
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
   }

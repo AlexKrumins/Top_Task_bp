@@ -4,7 +4,7 @@ import React, { Component } from "react";
 
 import Title from "../components/Title";
 import { Col, Row, Container } from "../components/Grid";
-import { Input, TextArea, FormBtn } from "../components/Form"
+import { Input, TextArea, FormBtn, DeleteBtn } from "../components/Form"
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Stopwatch from "../components/Stopwatch";
 import API from "../utils/API"
@@ -186,6 +186,11 @@ class Dashboard extends Component {
     }
   };
 
+  deleteTask = id => {
+    API.deleteTask(id)
+      .then(res => this.loadTasks())
+      .catch(err => console.log(err));
+  }
 
   handleInputChange = event => {
     const target = event.target
@@ -240,7 +245,10 @@ class Dashboard extends Component {
                                 snapshot.isDragging,
                                 provided.draggableProps.style
                             )}>
-                            {task.title}  
+                            <strong>
+                              {task.title}
+                            </strong>
+                            <DeleteBtn onClick={() => this.deleteTask(task.id)} />  
                           </div>
                         )}
                       </Draggable>

@@ -36,6 +36,14 @@ export function FormBtn(props) {
   );
 }
 
+export function DeleteBtn(props) {
+  return (
+    <span className="delete-btn" {...props} role="button" tabIndex="0">
+      ✗
+    </span>
+  );
+}
+
 export function Email(props) {
   return (
     <div className="form-group">

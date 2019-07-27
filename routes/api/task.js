@@ -7,7 +7,7 @@ router.route("/")
   .post(taskController.create);
 
 // Matches with "/api/task/:id"
-router.route("/:uuid")
+router.route("/:id")
   .get(taskController.findAll)
   .put(taskController.update)
   .delete(taskController.remove);
