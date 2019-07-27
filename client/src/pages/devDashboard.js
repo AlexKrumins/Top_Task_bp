@@ -9,7 +9,6 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Stopwatch from "../components/Stopwatch";
 import API from "../utils/API"
 import ListItem from '../components/ListItem';
-import HListItem from '../components/HListItem';
 // fake data generator
 const getItems = (count, offset = 0) =>
     Array.from({ length: count }, (v, k) => k).map(k => ({
@@ -234,13 +233,27 @@ class Dashboard extends Component {
                     style={getListStyle(snapshot.isDraggingOver)}>
                     {(this.state.left.length >0 ) ? (
                       this.state.left.map((task, index) => (
-                      <ListItem
+                      <Draggable
                         key={task.id}
                         draggableId={task.id}
-                        title={task.title}
                         index={index}
-                        deleteTask={this.deleteTask}
-                      />
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style
+                            )}>
+                            <strong>
+                              {task.title}
+                            </strong>
+                            <DeleteBtn onClick={() => this.deleteTask(task.id)} />  
+                          </div>
+                        )}
+                      </Draggable>
                       ))) : (
                         <div>
                           Create a plan by dragging tasks to this bar
@@ -310,13 +323,23 @@ class Dashboard extends Component {
                       style={getListStyle(snapshot.isDraggingOver)}>
                       {(this.state.right.length > 0) ? (
                         this.state.right.map((task, index) => (
-                          <ListItem
+                        <Draggable
                           key={task.id}
                           draggableId={task.id}
-                          title={task.title}
-                          index={index}
-                          deleteTask={this.deleteTask}
-                        />
+                          index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                              )}>
+                              {task.title}
+                            </div>
+                            )}
+                          </Draggable>
                         ))) : (
                           <div>
                           Drag tasks here to add them to your favorites
@@ -341,13 +364,23 @@ class Dashboard extends Component {
               >
                 {(this.state.bottom.length > 0) ? (
                   this.state.bottom.map((task, index) => (
-                    <HListItem
-                    key={task.id}
-                    draggableId={task.id}
-                    title={task.title}
-                    index={index}
-                    deleteTask={this.deleteTask}
-                  />
+                  <Draggable 
+                    key={task.id} 
+                    draggableId={task.id} 
+                    index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={getHItemStyle(
+                          snapshot.isDragging,
+                          provided.draggableProps.style
+                        )}>
+                        {task.title}
+                      </div>
+                    )}
+                  </Draggable>
                   ))) : (
                     <div>
                       Start Adding Tasks to your library. They'll appear down here.
