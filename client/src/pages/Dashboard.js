@@ -89,7 +89,7 @@ class Dashboard extends Component {
     notes: "",
     uuid: this.props.match.params.uuid,
     //dummy list for dnd
-    items: getItems(10),
+    items: [22,33,44,55,66,77,88,99],
     selected: getItems(5, 10),
     helm: [],
     isfavorite: false,
@@ -145,9 +145,10 @@ class Dashboard extends Component {
         );
 
         this.setState({
-            tasks: result.droppable,
-            favorites: result.favorites,
-            helm: result.creationStation
+            tasks: result.left,
+            favorites: result.right,
+            helm: result.creationStation,
+            items: result.bottom
         });
     }
   };
@@ -199,7 +200,7 @@ class Dashboard extends Component {
           <DragDropContext onDragEnd={this.onDragEnd}>
         <Row>
             <Col size="md-4">
-              <Droppable droppableId="droppable">
+              <Droppable droppableId="left">
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
@@ -225,10 +226,10 @@ class Dashboard extends Component {
                       </Draggable>
                       ))) : (
                         <div>
-                          Drag tasks to this bar
+                          Create a plan by dragging tasks to this bar
                         </div>
                       )
-                    };
+                    }
                     {provided.placeholder}
                   </div>
                 )}
@@ -268,12 +269,12 @@ class Dashboard extends Component {
               </form>
             </Col>
             <Col size="md-4">
-              <Droppable droppableId="favorites">
+              <Droppable droppableId="right">
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
                       style={getListStyle(snapshot.isDraggingOver)}>
-                      {this.state.favorites.length > 0 &&
+                      {(this.state.favorites.length > 0) ? (
                         this.state.favorites.map((task, index) => (
                         <Draggable
                           key={task.id}
@@ -291,8 +292,13 @@ class Dashboard extends Component {
                               {task.title}
                             </div>
                             )}
-                        </Draggable>
-                      ))}
+                          </Draggable>
+                        ))) : (
+                          <div>
+                          Drag tasks here to add them to your favorites
+                          </div>
+                        )
+                      }
                       {provided.placeholder}
                     </div>
                   )}
@@ -305,26 +311,32 @@ class Dashboard extends Component {
             <div
             ref={provided.innerRef}
             style={getHListStyle(snapshot.isDraggingOver)}
-            {...provided.droppableProps}
             >
-              {this.state.items.length > 0 &&
+              {(this.state.items.length > 0) ? (
                 this.state.items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
+                <Draggable 
+                  key={item} 
+                  draggableId={item} 
+                  index={index}>
                   {(provided, snapshot) => (
                     <div
-                    ref={provided.innerRef}
+                      ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       style={getHItemStyle(
                         snapshot.isDragging,
                         provided.draggableProps.style
-                        )}
-                        >
-                      {item.content}
+                      )}>
+                      {item}
                     </div>
                   )}
                 </Draggable>
-              ))}
+                ))) : (
+                  <div>
+                    Start Adding Tasks to your library. They'll appear down here.
+                  </div>
+                )
+              }
               {provided.placeholder}
             </div>
           )}
