@@ -8,6 +8,7 @@ import { Input, TextArea, FormBtn, DeleteBtn } from "../components/Form"
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Stopwatch from "../components/Stopwatch";
 import API from "../utils/API"
+import ListItem from '../components/ListItem';
 // fake data generator
 const getItems = (count, offset = 0) =>
     Array.from({ length: count }, (v, k) => k).map(k => ({
@@ -217,7 +218,7 @@ class Dashboard extends Component {
     }
   };
 
-  render() {
+  render = () => {
     return (
       <Container fluid>
         <Title>Top Task Dashboard</Title>
@@ -230,28 +231,15 @@ class Dashboard extends Component {
                   <div
                     ref={provided.innerRef}
                     style={getListStyle(snapshot.isDraggingOver)}>
-                    {(this.state.left.length > 0) ? (
+                    {(this.state.left.length >0 ) ? (
                       this.state.left.map((task, index) => (
-                      <Draggable
+                      <ListItem
                         key={task.id}
                         draggableId={task.id}
-                        index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getItemStyle(
-                                snapshot.isDragging,
-                                provided.draggableProps.style
-                            )}>
-                            <strong>
-                              {task.title}
-                            </strong>
-                            <DeleteBtn onClick={() => this.deleteTask(task.id)} />  
-                          </div>
-                        )}
-                      </Draggable>
+                        title={task.title}
+                        index={index}
+                        deleteTask={this.deleteTask}
+                      />
                       ))) : (
                         <div>
                           Create a plan by dragging tasks to this bar
