@@ -45,11 +45,11 @@ class Dashboard extends Component {
     left: [],
     right: [],
     bottom: [],
+    helm: [],
     title: "",
     notes: "",
     uuid: this.props.match.params.uuid,
 
-    // helm: [],
     isfavorite: false,
     isActive: false,
   };
@@ -59,7 +59,7 @@ class Dashboard extends Component {
     left: 'left',
     right: 'right',
     bottom: 'bottom',
-    creationStation: 'helm',
+    helm: 'helm',
   };
   
     
@@ -77,47 +77,29 @@ class Dashboard extends Component {
     if (!destination) {
         return;
     }
-
     if (source.droppableId === destination.droppableId) {
-        const tasks = reorder(
-            this.getList(source.droppableId),
-            source.index,
-            destination.index
-        );
-
-        let state = { tasks };
-
-        
-        if (source.droppableId === 'left') {
-          state = { left: tasks };
-        }
-        
-        if (source.droppableId === 'right') {
-          state = { right: tasks };
-        }
-        
-        if (source.droppableId === 'bottom') {
-            state = { bottom: tasks };
-        }
-
-        this.setState(state);
+      const tasks = reorder(
+          this.getList(source.droppableId),
+          source.index,
+          destination.index
+      );
+      let state = { tasks };
+      if (source.droppableId === 'left') {state = { left: tasks }};
+      if (source.droppableId === 'right') {state = { right: tasks }};
+      if (source.droppableId === 'bottom') {state = { bottom: tasks }};
+      if (source.droppableId === 'helm') {state = { helm: tasks }}
+      this.setState(state);
     } else {
       const result = move(
-          this.getList(source.droppableId),
-          this.getList(destination.droppableId),
-          source,
-          destination
+        this.getList(source.droppableId),
+        this.getList(destination.droppableId),
+        source,
+        destination
       );
-      console.log("result move", result)
-      if(result.left){
-        this.setState({left: result.left})
-      };
-        if(result.right){
-        this.setState({right: result.right})
-      };
-      if(result.bottom){
-        this.setState({bottom: result.bottom})
-      };
+      if(result.left){this.setState({left: result.left})};
+      if(result.right){this.setState({right: result.right})};
+      if(result.bottom){this.setState({bottom: result.bottom})};
+      if(result.helm){this.setState({bottom: result.helm})};
     };
   };
 
@@ -149,8 +131,8 @@ class Dashboard extends Component {
   deleteTask = id => {
     API.deleteTask(id)
       .then(res => this.loadTasks())
-      .catch(err => console.log(err));
-  }
+      .catch(err => console.log(err))
+  };
 
   updateTask = (id, destination)  => {
     let newStatus = {}
@@ -164,16 +146,15 @@ class Dashboard extends Component {
     console.log("taskData", taskData)
     API.updateTask(taskData)
       .then(res => console.log(res.config.data))
-  }
+      .catch(err => console.log(err))
+  };
 
   handleInputChange = event => {
     const target = event.target
     const value = target.type === "checkbox" ? target.checked : target.value
     const name = target.name;
     console.log(name, value)
-    this.setState({
-      [name]: value
-    });
+    this.setState({[name]: value});
   };
 
   handleFormSubmit = event => {
@@ -309,7 +290,7 @@ class Dashboard extends Component {
         </DragDropContext>
       </Container>
     );
-  }
-}
+  };
+};
 
 export default Dashboard;

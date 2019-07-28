@@ -2,11 +2,12 @@ const db = require("../models");
 
 module.exports = {
   findAll: function(req, res) {
+    console.log("req.params.id", req.params.id)
     db.Task
-      .findAll({user_uuid: req.query, order: [['updatedAt', 'DESC']]})
+      .findAll({where: {user_uuid: req.params.id}, order: [['updatedAt', 'DESC']]})
       // .order({ updated_at: "DESC" })
       .then(dbModel => res.json(dbModel))
-      .catch(err => res.status(422).json(err));
+      .catch(err => res.redirect("/login"));
   },
   // findById: function(req, res) {
   //   if(!req.user) {return res.redirect("/login")}
