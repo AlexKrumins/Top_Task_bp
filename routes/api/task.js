@@ -4,12 +4,12 @@ const taskController = require("../../controllers/taskController");
 // Matches with "/api/task"
 router.route("/")
   // .get(taskController.findById)
-  .post(taskController.create);
+  .post(taskController.create)
+  .put(taskController.update);
 
 // Matches with "/api/task/:id"
 router.route("/:id")
   .get(taskController.findAll)
-  .put(taskController.update)
   .delete(taskController.remove);
 
 module.exports = router;

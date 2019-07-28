@@ -36,7 +36,7 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
     result[droppableDestination.droppableId] = destClone;
-
+    console.log("result", result)
     return result;
 };
 
@@ -70,8 +70,9 @@ class Dashboard extends Component {
   getList = id => this.state[this.id2List[id]];
 
   onDragEnd = (result) => {
-    const { source, destination } = result;
+    this.updateTask(result.draggableId, result.destination.droppableId);
     console.log("onDrageEnd result", result)
+    const { source, destination } = result;
     // dropped outside the list
     if (!destination) {
         return;
@@ -107,7 +108,7 @@ class Dashboard extends Component {
           source,
           destination
       );
-
+      console.log("result move", result)
       if(result.left){
         this.setState({left: result.left})
       };
@@ -151,6 +152,20 @@ class Dashboard extends Component {
       .catch(err => console.log(err));
   }
 
+  updateTask = (id, destination)  => {
+    let newStatus = {}
+      if (destination === "left") { newStatus = {active: true} }
+      if (destination === "right") { newStatus = {favorite: true, active: false}}
+      if (destination === "bottom") { newStatus = {favorite: false, active: false}}
+    const taskData = {
+      id,
+      ...newStatus
+    }
+    console.log("taskData", taskData)
+    API.updateTask(taskData)
+      .then(res => console.log(res.config.data))
+  }
+
   handleInputChange = event => {
     const target = event.target
     const value = target.type === "checkbox" ? target.checked : target.value
@@ -180,119 +195,118 @@ class Dashboard extends Component {
     return (
       <Container fluid>
         <Title>Top Task Dashboard</Title>
-          <DragDropContext onDragEnd={this.onDragEnd}>
-        <Row>
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <Row>
             <Col size="md-4">
-            <h2>Today's Tasks</h2>
-              <List droppableId="left">
-                {(this.state.left.length >0 ) ? (
-                  this.state.left.map((task, index) => (
-                  <ListItem
-                    key={task.id}
-                    draggableId={task.id}
-                    title={task.title}
-                    index={index}
-                    deleteTask={this.deleteTask}
-                  />
-                  ))) : (
-                  <div>
-                    Create a plan by dragging tasks to this bar
-                  </div>
-                )}
-              </List>
-            </Col>
-            <Col size="md-4">
-              <Stopwatch />
-              <form>
-                <h1>Create a new task</h1>
-                <Input
-                  value={this.state.title}
-                  onChange={this.handleInputChange}
-                  name="title"
-                  placeholder="Task Name (required)"
-                />
-                <TextArea
-                  value={this.state.notes}
-                  onChange={this.handleInputChange}
-                  name="notes"
-                  placeholder="Notes (Optional)"
-                />
-                <Row>
-                  <Col size="md-6">
-                    <label>
-                      <input
-                        name="isActive"
-                        type="checkbox"
-                        value={this.state.isActive}
-                        onChange={this.handleInputChange}
-                      />
-                      Add to Today's Tasks
-                    </label>
-                    <br></br>
-                    <label>
-                      <input
-                        name="isfavorite"
-                        type="checkbox"
-                        value={this.state.isfavorite}
-                        onChange={this.handleInputChange}
-                      />
-                      Add to Favorites
-                    </label>
-                  </Col>
-                  <Col size="md-6">
-                    <FormBtn
-                      disabled={!this.state.title}
-                      onClick={this.handleFormSubmit}
-                    >
-                      Add Task to Library
-                    </FormBtn>
-                  </Col>
-                </Row> 
-              </form>
-            </Col>
-            <Col size="md-4">
-            <h2>Favorites</h2>
-              <List droppableId="right">
-                {(this.state.right.length > 0) ? (
-                  this.state.right.map((task, index) => (
+              <h2>Today's Tasks</h2>
+                <List droppableId="left">
+                  {(this.state.left.length >0 ) ? (
+                    this.state.left.map((task, index) => (
                     <ListItem
-                    key={task.id}
-                    draggableId={task.id}
-                    title={task.title}
-                    index={index}
-                    deleteTask={this.deleteTask}
+                      key={task.id}
+                      draggableId={task.id}
+                      title={task.title}
+                      index={index}
+                      deleteTask={this.deleteTask}
+                    />
+                    ))) : (
+                    <div>
+                      Create a plan by dragging tasks to this bar
+                    </div>
+                  )}
+                </List>
+              </Col>
+              <Col size="md-4">
+                <Stopwatch />
+                <form>
+                  <h1>Create a new task</h1>
+                  <Input
+                    value={this.state.title}
+                    onChange={this.handleInputChange}
+                    name="title"
+                    placeholder="Task Name (required)"
                   />
-                  ))) : (
-                  <div>
-                    Drag tasks here to add them to your favorites
-                  </div>
-                )}
-              </List>
-            </Col>
-        </Row>
-        <Row>
-          <h2>Recently Added Tasks</h2>
-        </Row>
-        <Row>
-          <HList droppableId="bottom" direction="horizontal">
-            {(this.state.bottom.length > 0) ? (
-              this.state.bottom.map((task, index) => (
-              <HListItem
-                key={task.id}
-                draggableId={task.id}
-                title={task.title}
-                index={index}
-                deleteTask={this.deleteTask}
-              />
-              ))) : (
-              <div>
-                Start Adding Tasks to your library. They'll appear down here.
-              </div>
-            )}
-          </HList>
-        </Row>
-      </DragDropContext>
-
+                  <TextArea
+                    value={this.state.notes}
+                    onChange={this.handleInputChange}
+                    name="notes"
+                    placeholder="Notes (Optional)"
+                  />
+                  <Row>
+                    <Col size="md-6">
+                      <label>
+                        <input
+                          name="isActive"
+                          type="checkbox"
+                          value={this.state.isActive}
+                          onChange={this.handleInputChange}
+                        />
+                        Add to Today's Tasks
+                      </label>
+                      <br></br>
+                      <label>
+                        <input
+                          name="isfavorite"
+                          type="checkbox"
+                          value={this.state.isfavorite}
+                          onChange={this.handleInputChange}
+                        />
+                        Add to Favorites
+                      </label>
+                    </Col>
+                    <Col size="md-6">
+                      <FormBtn
+                        disabled={!this.state.title}
+                        onClick={this.handleFormSubmit}
+                      >
+                        Add Task to Library
+                      </FormBtn>
+                    </Col>
+                  </Row> 
+                </form>
+              </Col>
+              <Col size="md-4">
+              <h2>Favorites</h2>
+                <List droppableId="right">
+                  {(this.state.right.length > 0) ? (
+                    this.state.right.map((task, index) => (
+                      <ListItem
+                      key={task.id}
+                      draggableId={task.id}
+                      title={task.title}
+                      index={index}
+                      deleteTask={this.deleteTask}
+                    />
+                    ))) : (
+                    <div>
+                      Drag tasks here to add them to your favorites
+                    </div>
+                  )}
+                </List>
+              </Col>
+          </Row>
+          <Row>
+            <h2>Recently Added Tasks</h2>
+          </Row>
+          <Row>
+            <HList droppableId="bottom" direction="horizontal">
+              {(this.state.bottom.length > 0) ? (
+                this.state.bottom.map((task, index) => (
+                <HListItem
+                  key={task.id}
+                  draggableId={task.id}
+                  title={task.title}
+                  index={index}
+                  deleteTask={this.deleteTask}
+                />
+                ))) : (
+                <div>
+                  Start Adding Tasks to your library. They'll appear down here.
+                </div>
+              )}
+            </HList>
+          </Row>
+        </DragDropContext>
       </Container>
     );
   }

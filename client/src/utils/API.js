@@ -11,11 +11,11 @@ export default {
     return axios.delete("/api/task/" + id);
   },
   updateTask: function(taskData) {
-    return axios.put("/api/task/" + taskData.id);
+    return axios.put("/api/task/", taskData);
   },
   // Saves a book to the database
   saveTask: function(taskData) {
-    return axios.post("/api/task", taskData);
+    return axios.post("/api/task/", taskData);
   },
   signupUser: function(userData) {
     return axios.post("/api/user/signup", userData)
