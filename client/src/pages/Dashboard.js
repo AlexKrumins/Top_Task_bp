@@ -1,18 +1,22 @@
 
 import React, { Component } from "react";
+// import { Stopwatch } from "hooked-react-stopwatch";
 // import { Redirect } from 'react-router-dom'
 // import ReactDOM from 'react-dom';
 
 import Title from "../components/Title";
 import { Col, Row, Container } from "../components/Grid";
-import { Input, TextArea, FormBtn } from "../components/Form"
+import { Input, TextArea, FormBtn } from "../components/Form";
 import { DragDropContext } from 'react-beautiful-dnd';
-import Stopwatch from "../components/Stopwatch";
-import API from "../utils/API"
+import {Stopwatch} from "../components/Stopwatch";
+import API from "../utils/API";
 import List from '../components/List';
 import ListItem from '../components/ListItem';
 import HList from '../components/HList';
 import HListItem from '../components/HListItem';
+import moment from "moment";
+import { FaPlay, FaPause, FaReply } from "react-icons/fa";
+import OptimizedIcon from "../components/OptimizedIcon";
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -40,21 +44,32 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     return result;
 };
 
+
 class Dashboard extends Component {
   state = {
     left: [],
     right: [],
     bottom: [],
     helm: [],
+
     title: "",
     notes: "",
     uuid: this.props.match.params.uuid,
-
     isfavorite: false,
     isActive: false,
+
+    startTime: null,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+    stashedTime: 0,
+    isTimerStarted: false,
+    intervalTimer: null
   };
+
   
-  
+
   id2List = {
     left: 'left',
     right: 'right',
@@ -62,11 +77,14 @@ class Dashboard extends Component {
     helm: 'helm',
   };
   
+
     
   componentDidMount = () => {
     this.loadTasks();
+    clearInterval(this.state.intervalTimer)
   }
-  
+
+
   getList = id => this.state[this.id2List[id]];
 
   onDragEnd = (result) => {
@@ -104,7 +122,6 @@ class Dashboard extends Component {
   };
 
   loadTasks = () => {
-    console.log(this.state.uuid)
     if (!this.state.uuid) { return window.location.replace("/login") }
     else{
       API.getTasks(this.state.uuid)
@@ -153,8 +170,10 @@ class Dashboard extends Component {
     const target = event.target
     const value = target.type === "checkbox" ? target.checked : target.value
     const name = target.name;
-    console.log(name, value)
     this.setState({[name]: value});
+    console.log("seconds",this.state.seconds)
+    console.log("startTime",this.state.startTime)
+    console.log("stashedTime",this.state.stashedTime)
   };
 
   handleFormSubmit = event => {
@@ -171,6 +190,50 @@ class Dashboard extends Component {
       .catch(err => console.log(err));
     }
   };
+/////////////////////////// Stopwatch Controls
+  calculateTimeDiff = (startTime, stashedTime) => {
+    let timeDiff = moment.duration(moment().diff(startTime));
+    if (stashedTime) timeDiff = timeDiff.add(stashedTime);
+
+    return timeDiff;
+  };
+
+  startTimer = () => {
+    if(!this.state.isTimerStarted) {
+      const startTime = moment();
+      const updateTimer = () => {
+        const timeDiff = this.calculateTimeDiff(startTime, this.state.stashedTime);
+        this.setState({
+          startTime,
+          hours: timeDiff.hours(),
+          minutes: timeDiff.minutes(),
+          seconds: timeDiff.seconds(),
+          milliseconds: timeDiff.milliseconds(),
+          isTimerStarted: true,
+          // intervalTimer: setInterval(updateTimer, 50)
+        });
+      };
+      this.state.intervalTimer = setInterval(updateTimer, 50);
+    };
+  };
+
+  stopTimer = () => {
+    if (this.state.isTimerStarted) {
+      clearInterval(this.state.intervalTimer);
+      const timeSpent = moment.duration(moment().diff(this.state.startTime));
+      timeSpent.add(this.state.stashedTime);
+      this.setState({
+        startTime: null,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+        stashedTime: timeSpent,
+        isTimerStarted: false,
+        intervalTimer: null
+      })
+    }
+  }
 
   render = () => {
     return (
@@ -198,7 +261,9 @@ class Dashboard extends Component {
                 </List>
               </Col>
               <Col size="md-4">
-                <Stopwatch />
+                <OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
+                <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
+
                 <form>
                   <h1>Create a new task</h1>
                   <Input

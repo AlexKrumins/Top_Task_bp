@@ -66,6 +66,7 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "helmet": "^3.18.0",
+    "hooked-react-stopwatch": "^1.4.8",
     "if-env": "^1.0.4",
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",
