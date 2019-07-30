@@ -8,14 +8,14 @@ import Title from "../components/Title";
 import { Col, Row, Container } from "../components/Grid";
 import { Input, TextArea, FormBtn } from "../components/Form";
 import { DragDropContext } from 'react-beautiful-dnd';
-import {Stopwatch} from "../components/Stopwatch";
+import { handleZerosPadding } from "../components/Stopwatch/utils";
 import API from "../utils/API";
 import List from '../components/List';
 import ListItem from '../components/ListItem';
 import HList from '../components/HList';
 import HListItem from '../components/HListItem';
 import moment from "moment";
-import { FaPlay, FaPause, FaReply } from "react-icons/fa";
+import { FaPlay, FaPause } from "react-icons/fa";
 import OptimizedIcon from "../components/OptimizedIcon";
 
 // a little function to help us with reordering the result
@@ -213,7 +213,7 @@ class Dashboard extends Component {
           // intervalTimer: setInterval(updateTimer, 50)
         });
       };
-      this.state.intervalTimer = setInterval(updateTimer, 50);
+      this.setState({intervalTimer : setInterval(updateTimer, 50)});
     };
   };
 
@@ -224,10 +224,6 @@ class Dashboard extends Component {
       timeSpent.add(this.state.stashedTime);
       this.setState({
         startTime: null,
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0,
         stashedTime: timeSpent,
         isTimerStarted: false,
         intervalTimer: null
@@ -261,9 +257,23 @@ class Dashboard extends Component {
                 </List>
               </Col>
               <Col size="md-4">
-                <OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
-                <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
-
+                <span>
+                  {handleZerosPadding("hours", this.state.hours)}:
+                </span>
+                <span>
+                  {handleZerosPadding("minutes", this.state.minutes)}:
+                </span>
+                <span>
+                  {handleZerosPadding("seconds", this.state.seconds)}:
+                </span>
+                <span>
+                  {handleZerosPadding("milliseconds", this.state.milliseconds)}
+                </span>
+                {(!this.state.isTimerStarted) ? 
+                  (<OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
+                ):(
+                  <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
+                )}
                 <form>
                   <h1>Create a new task</h1>
                   <Input
