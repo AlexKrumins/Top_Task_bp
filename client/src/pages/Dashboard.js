@@ -40,7 +40,6 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
     result[droppableDestination.droppableId] = destClone;
-    console.log("result", result)
     return result;
 };
 
@@ -57,6 +56,7 @@ class Dashboard extends Component {
     uuid: this.props.match.params.uuid,
     isfavorite: false,
     isActive: false,
+    helmDropDisabled: false,
 
     startTime: null,
     hours: 0,
@@ -88,18 +88,19 @@ class Dashboard extends Component {
   getList = id => this.state[this.id2List[id]];
 
   onDragEnd = (result) => {
-    this.updateTask(result.draggableId, result.destination.droppableId);
-    console.log("onDrageEnd result", result)
-    const { source, destination } = result;
+    console.log("onDragEnd result", result)
+    const { source, destination, } = result;
+    const draggableId = result.draggableId;
     // dropped outside the list
     if (!destination) {
-        return;
-    }
-    if (source.droppableId === destination.droppableId) {
+      return;
+    } else if (this.state.helmDropDisabled && destination.droppableId === "helm") {
+      return;
+    } else if (source.droppableId === destination.droppableId) {
       const tasks = reorder(
-          this.getList(source.droppableId),
-          source.index,
-          destination.index
+        this.getList(source.droppableId),
+        source.index,
+        destination.index
       );
       let state = { tasks };
       if (source.droppableId === 'left') {state = { left: tasks }};
@@ -108,22 +109,34 @@ class Dashboard extends Component {
       if (source.droppableId === 'helm') {state = { helm: tasks }}
       this.setState(state);
     } else {
-      const result = move(
+      const moveResult = move(
         this.getList(source.droppableId),
         this.getList(destination.droppableId),
         source,
         destination
-      );
-      if(result.left){this.setState({left: result.left})};
-      if(result.right){this.setState({right: result.right})};
-      if(result.bottom){this.setState({bottom: result.bottom})};
-      if(result.helm){this.setState({helm: result.helm})};
+        );
+      this.updateTask(draggableId, destination.droppableId);
+      console.log("result", result)
+      console.log("moveResult", moveResult)
+      if(moveResult.left){this.setState({left: moveResult.left})};
+      if(moveResult.right){this.setState({right: moveResult.right})};
+      if(moveResult.bottom){this.setState({bottom: moveResult.bottom})};
+      if(moveResult.helm){
+        if (moveResult.helm.length < 1){
+          console.log("result 126")
+          this.setState({helm: moveResult.helm, helmDropDisabled: false})
+        } else {
+          this.setState({helm: moveResult.helm, helmDropDisabled: true})
+        };
+      };
     };
+    console.log("this.state.helm",this.state.helm)
+    console.log("this.state.helmDropDisabled",this.state.helmDropDisabled)
   };
-
-  loadTasks = () => {
-    if (!this.state.uuid) { return window.location.replace("/login") }
-    else{
+      
+      loadTasks = () => {
+        if (!this.state.uuid) { return window.location.replace("/login") }
+        else{
       API.getTasks(this.state.uuid)
       .then(res => {
         let todo = res.data.filter(task => {return (task.active)})
@@ -153,7 +166,7 @@ class Dashboard extends Component {
   };
 
   updateTask = (id, destination)  => {
-    let newStatus = {}
+    let newStatus = {} 
       if (destination === "left") { newStatus = {active: true} }
       if (destination === "right") { newStatus = {favorite: true, active: false}}
       if (destination === "bottom") { newStatus = {favorite: false, active: false}}
@@ -258,7 +271,7 @@ class Dashboard extends Component {
                 </List>
               </Col>
               <Col size="md-4">
-                <List droppableId="helm">
+                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled}>
                 {(this.state.helm.length >0 && this.state.helm.length <2) ? (
                     this.state.helm.map((task, index) => (
                       <ListItem
@@ -271,7 +284,7 @@ class Dashboard extends Component {
                     ))
                   ) : (
                     <div>
-                      Drag your Top Task here to work start tracking.
+                      Drag your Top Task here to start tracking.
                     </div>
                 )}
                 <div>

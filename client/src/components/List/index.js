@@ -11,7 +11,7 @@ const getListStyle = isDraggingOver => ({
 
 function List(props) {
   return(
-    <Droppable droppableId={props.droppableId}>
+    <Droppable droppableId={props.droppableId} isDropDisabled={props.isDropDisabled}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
