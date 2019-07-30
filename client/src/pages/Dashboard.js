@@ -117,7 +117,7 @@ class Dashboard extends Component {
       if(result.left){this.setState({left: result.left})};
       if(result.right){this.setState({right: result.right})};
       if(result.bottom){this.setState({bottom: result.bottom})};
-      if(result.helm){this.setState({bottom: result.helm})};
+      if(result.helm){this.setState({helm: result.helm})};
     };
   };
 
@@ -140,6 +140,7 @@ class Dashboard extends Component {
           console.log("bottom", this.state.bottom)
           console.log("right", this.state.right)
           console.log("left", this.state.left)
+          console.log("helm", this.state.helm)
       })
       .catch(err => console.log(err));
     }
@@ -239,7 +240,7 @@ class Dashboard extends Component {
           <Row>
             <Col size="md-4">
               <h2>Today's Tasks</h2>
-                <List droppableId="left">
+                <List internalScroll="true" droppableId="left">
                   {(this.state.left.length >0 ) ? (
                     this.state.left.map((task, index) => (
                     <ListItem
@@ -257,23 +258,41 @@ class Dashboard extends Component {
                 </List>
               </Col>
               <Col size="md-4">
-                <span>
-                  {handleZerosPadding("hours", this.state.hours)}:
-                </span>
-                <span>
-                  {handleZerosPadding("minutes", this.state.minutes)}:
-                </span>
-                <span>
-                  {handleZerosPadding("seconds", this.state.seconds)}:
-                </span>
-                <span>
-                  {handleZerosPadding("milliseconds", this.state.milliseconds)}
-                </span>
-                {(!this.state.isTimerStarted) ? 
-                  (<OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
-                ):(
-                  <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
+                <List droppableId="helm">
+                {(this.state.helm.length >0 && this.state.helm.length <2) ? (
+                    this.state.helm.map((task, index) => (
+                      <ListItem
+                      key={task.id}
+                      draggableId={task.id}
+                      title={task.title}
+                      index={index}
+                      deleteTask={this.deleteTask}
+                      />
+                    ))
+                  ) : (
+                    <div>
+                      Drag your Top Task here to work start tracking.
+                    </div>
                 )}
+                <div>
+                  <span>
+                    {handleZerosPadding("hours", this.state.hours)}:
+                  </span>
+                  <span>
+                    {handleZerosPadding("minutes", this.state.minutes)}:
+                  </span>
+                  <span>
+                    {handleZerosPadding("seconds", this.state.seconds)}:
+                  </span>
+                  <span>
+                    {handleZerosPadding("milliseconds", this.state.milliseconds)}
+                  </span>
+                  {(!this.state.isTimerStarted) ? 
+                    (<OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
+                  ):(
+                    <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
+                  )}
+                </div>
                 <form>
                   <h1>Create a new task</h1>
                   <Input
@@ -320,6 +339,7 @@ class Dashboard extends Component {
                     </Col>
                   </Row> 
                 </form>
+                </List>
               </Col>
               <Col size="md-4">
               <h2>Favorites</h2>
@@ -345,7 +365,7 @@ class Dashboard extends Component {
             <h2>Recently Added Tasks</h2>
           </Row>
           <Row>
-            <HList droppableId="bottom" direction="horizontal">
+            <HList internalScroll="true" droppableId="bottom" direction="horizontal">
               {(this.state.bottom.length > 0) ? (
                 this.state.bottom.map((task, index) => (
                 <HListItem
