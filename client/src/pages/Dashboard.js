@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 // import { Stopwatch } from "hooked-react-stopwatch";
 // import { Redirect } from 'react-router-dom'
@@ -299,18 +298,12 @@ class Dashboard extends Component {
                     </div>
                 )}
                 <div>
-                  <span>
+                  <h1>
                     {handleZerosPadding("hours", this.state.hours)}:
-                  </span>
-                  <span>
                     {handleZerosPadding("minutes", this.state.minutes)}:
-                  </span>
-                  <span>
                     {handleZerosPadding("seconds", this.state.seconds)}:
-                  </span>
-                  <span>
                     {handleZerosPadding("milliseconds", this.state.milliseconds)}
-                  </span>
+                  </h1>
                   {(!this.state.isTimerStarted) ? 
                     (<OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
                   ):(
@@ -411,5 +404,4 @@ class Dashboard extends Component {
     );
   };
 };
-
 export default Dashboard;
