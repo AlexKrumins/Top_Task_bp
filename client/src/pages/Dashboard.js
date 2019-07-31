@@ -49,7 +49,7 @@ class Dashboard extends Component {
     left: [],
     right: [],
     bottom: [],
-    helm: [],
+    helm: {},
 
     title: "",
     notes: "",
@@ -165,6 +165,12 @@ class Dashboard extends Component {
       .catch(err => console.log(err))
   };
 
+  taskToHelm = (task) => {
+    const title = task.title;
+    const notes = task.notes;
+    this.setState(title, notes)
+  }
+  
   updateTask = (id, destination)  => {
     let newStatus = {} 
       if (destination === "left") { newStatus = {active: true} }
@@ -212,11 +218,11 @@ class Dashboard extends Component {
     return timeDiff;
   };
 
-  startTimer = () => {
-    if(!this.state.isTimerStarted) {
+  startTimer = (task) => {
+    if(this.state.helmDropDisabled && !this.state.isTimerStarted) {
       const startTime = moment();
       const updateTimer = () => {
-        const timeDiff = this.calculateTimeDiff(startTime, this.state.stashedTime);
+        const timeDiff = this.calculateTimeDiff(startTime, task.stashedTime);
         this.setState({
           startTime,
           hours: timeDiff.hours(),
@@ -224,26 +230,31 @@ class Dashboard extends Component {
           seconds: timeDiff.seconds(),
           milliseconds: timeDiff.milliseconds(),
           isTimerStarted: true,
-          // intervalTimer: setInterval(updateTimer, 50)
         });
       };
       this.setState({intervalTimer : setInterval(updateTimer, 50)});
     };
   };
 
-  stopTimer = () => {
+  stopTimer = (task) => {
     if (this.state.isTimerStarted) {
       clearInterval(this.state.intervalTimer);
       const timeSpent = moment.duration(moment().diff(this.state.startTime));
-      timeSpent.add(this.state.stashedTime);
+      timeSpent.add(task.stashedTime);
       this.setState({
         startTime: null,
-        stashedTime: timeSpent,
         isTimerStarted: false,
         intervalTimer: null
       })
-    }
-  }
+      const taskData ={
+        id: task.id,
+        stashedTime: timeSpent
+      }
+      API.updateTask(taskData)
+        .then(res => console.log(res.config.data))
+        .catch(err => console.log(err))
+    };
+  };
 
   render = () => {
     return (
@@ -271,7 +282,7 @@ class Dashboard extends Component {
                 </List>
               </Col>
               <Col size="md-4">
-                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled}>
+                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled} onChange={this.taskToHelm(this.state.helm)}>
                 {(this.state.helm.length >0 && this.state.helm.length <2) ? (
                     this.state.helm.map((task, index) => (
                       <ListItem

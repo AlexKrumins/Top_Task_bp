@@ -33,6 +33,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       default: null,
     },
+    stashedTime: {
+      type: DataTypes.STRING,
+      default: null,
+    },
     taskCreated: {
       type: DataTypes.DATE, 
       default: null,
