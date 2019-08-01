@@ -180,8 +180,10 @@ class Dashboard extends Component {
           bottom: everythingElse, 
           title: "", 
           notes: "",
+          uuid: this.props.match.params.uuid,
+          isfavorite: false,
+          isActive: false,
           ...loadTime,
-          user: this.props.match.params.uuid,
         })
         console.log("bottom", this.state.bottom)
         console.log("right", this.state.right)
@@ -198,12 +200,6 @@ class Dashboard extends Component {
       .then(res => this.loadTasks())
       .catch(err => console.log(err))
   };
-
-  taskToHelm = (task) => {
-    const title = task.title;
-    const notes = task.notes;
-    this.setState(title, notes)
-  }
   
   updateTask = (result)  => {
     let newStatus = {} 
@@ -228,26 +224,27 @@ class Dashboard extends Component {
     const value = target.type === "checkbox" ? target.checked : target.value
     const name = target.name;
     this.setState({[name]: value});
-    console.log("seconds",this.state.seconds)
-    console.log("startTime",this.state.startTime)
-    console.log("stashedTime",this.state.stashedTime)
-    console.log("this.state.helm",this.state.helm)
-    console.log("this.state.helmDropDisabled",this.state.helmDropDisabled)
+    console.log("event.target", event.target)
+    console.log("this.state.isfavorite",this.state.isfavorite)
+    console.log("this.state.bottom",this.state.bottom)
   };
 
   createTask = event => {
     event.preventDefault();
     if (this.state.title) {
+      let fireItUp = null;
+      if(!this.state.isActive && !this.state.isfavorite) {fireItUp = true}
       API.saveTask({
         title: this.state.title,
         notes: this.state.notes,
         UserUuid: this.state.uuid,
         favorite: this.state.isfavorite,
-        topTask: true
+        active: this.state.isActive,
+        topTask: fireItUp,
       })
       .then(res => {
         this.loadTasks()
-        this.startTimer()
+        if (this.state.helm.length) this.startTimer()
       })
       .catch(err => console.log(err));
     }
@@ -256,7 +253,6 @@ class Dashboard extends Component {
   calculateTimeDiff = (startTime, stashedTime) => {
     let timeDiff = moment.duration(moment().diff(startTime));
     if (stashedTime) timeDiff = timeDiff.add(stashedTime);
-    console.log(timeDiff)
     return timeDiff;
   };
 
@@ -376,9 +372,9 @@ class Dashboard extends Component {
                       <label>
                       <label>
                           <input
-                            name="isfavorite"
+                            name="isActive"
                             type="radio"
-                            value={this.state.isActive}
+                            value={true}
                             onChange={this.handleInputChange}
                             />
                           Add to Today's Tasks
@@ -386,7 +382,7 @@ class Dashboard extends Component {
                         <input
                           name="isfavorite"
                           type="radio"
-                          value={this.state.isfavorite}
+                          value={true}
                           onChange={this.handleInputChange}
                           />
                         Add to Favorites
@@ -396,8 +392,12 @@ class Dashboard extends Component {
                       <FormBtn
                         disabled={!this.state.title}
                         onClick={this.createTask}
-                        >
-                        Add Task to Library
+                      >
+                        {(this.state.isfavorite || this.state.isActive) ? (
+                          "Add Task to Library"
+                        ):(
+                          "Start tracking this task"
+                        )}
                       </FormBtn>
                     </Col>
                   </Row> 
