@@ -1,4 +1,6 @@
 import React from 'react';
+import moment from "moment";
+
 import { SuccessBtn } from "../Form";
 import { Draggable } from 'react-beautiful-dnd';
 
@@ -18,6 +20,8 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 function ListItem(props) {
+  const displayTime = (moment.utc(moment.duration(props.time, "ms").asMilliseconds()).format("H:mm:ss"))
+
   return(
     <Draggable
       isDragDisabled={props.isDragDisabled}
@@ -34,6 +38,7 @@ function ListItem(props) {
           )}>
           <strong>
             {props.title}
+            {(props.source !== "helm") ? displayTime: (null)}
           </strong>
           <SuccessBtn onClick={() => {
             props.completeTask({

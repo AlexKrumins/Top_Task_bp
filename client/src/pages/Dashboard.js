@@ -275,7 +275,7 @@ class Dashboard extends Component {
       clearInterval(this.state.intervalTimer);
       const timeSpent = moment.duration(moment().diff(this.state.startTime));
       timeSpent.add(this.state.stashedTime);
-      console.log("timeSpent",timeSpent)
+      
       this.setState({
         startTime: null,
         isTimerStarted: false,
@@ -310,6 +310,7 @@ class Dashboard extends Component {
                       index={index}
                       completeTask={this.onDragEnd}
                       source = {"left"}
+                      time = {task.stashedTime}
                     />
                     ))) : (
                     <div>
@@ -415,10 +416,11 @@ class Dashboard extends Component {
                       index={index}
                       completeTask={this.onDragEnd}
                       source = {"right"}
+                      time = {task.stashedTime}
                     />
                     ))) : (
                     <div>
-                      Drag tasks here to add them to your favorites
+                      Drag tasks here to store them in your favorites
                     </div>
                   )}
                 </List>
@@ -437,6 +439,7 @@ class Dashboard extends Component {
                   title={task.title}
                   index={index}
                   deleteTask={this.deleteTask}
+                  time = {task.stashedTime}
                 />
                 ))) : (
                 <div>
