@@ -57,7 +57,7 @@ class Login extends Component {
                 disabled={!(this.state.email && this.state.password)}
                 onClick={this.handleFormSubmit}
                 >
-                Create Account
+                Log In
               </FormBtn>
             </form>
           </Col>
