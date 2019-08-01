@@ -48,7 +48,7 @@ class Dashboard extends Component {
     left: [],
     right: [],
     bottom: [],
-    helm: {},
+    helm: [],
 
     title: "",
     notes: "",
@@ -89,11 +89,10 @@ class Dashboard extends Component {
   onDragEnd = (result) => {
     console.log("onDragEnd result", result)
     const { source, destination, } = result;
-    const draggableId = result.draggableId;
     // dropped outside the list
     if (!destination) {
       return;
-    } else if (this.state.helmDropDisabled && destination.droppableId === "helm") {
+    } else if (this.state.isTimerStarted && source.droppableId === "helm") {
       return;
     } else if (source.droppableId === destination.droppableId) {
       const tasks = reorder(
@@ -113,46 +112,82 @@ class Dashboard extends Component {
         this.getList(destination.droppableId),
         source,
         destination
-        );
-      this.updateTask(draggableId, destination.droppableId);
-      console.log("result", result)
-      console.log("moveResult", moveResult)
+      );
+      // const result = {
+      //   id: draggableId,
+      //   source: source.droppableId,
+      //   destination: destination.droppabbleId,
+      // }
+      this.updateTask(result);
       if(moveResult.left){this.setState({left: moveResult.left})};
       if(moveResult.right){this.setState({right: moveResult.right})};
       if(moveResult.bottom){this.setState({bottom: moveResult.bottom})};
       if(moveResult.helm){
         if (moveResult.helm.length < 1){
-          console.log("result 126")
-          this.setState({helm: moveResult.helm, helmDropDisabled: false})
+          this.setState({
+            helm: moveResult.helm, 
+            helmDropDisabled: false,
+            stashedTime: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0
+          })
         } else {
-          this.setState({helm: moveResult.helm, helmDropDisabled: true})
+          const stashedTime = moment.duration(moveResult.helm[0].stashedTime)
+          const loadTime = {
+            stashedTime,
+            hours: stashedTime.hours(),
+            minutes: stashedTime.minutes(),
+            seconds: stashedTime.seconds(),
+            milliseconds: stashedTime.milliseconds(),
+          }
+          this.setState({
+            helm: moveResult.helm, 
+            helmDropDisabled: true,
+            ...loadTime,
+          })
         };
       };
     };
-    console.log("this.state.helm",this.state.helm)
-    console.log("this.state.helmDropDisabled",this.state.helmDropDisabled)
   };
       
-      loadTasks = () => {
-        if (!this.state.uuid) { return window.location.replace("/login") }
-        else{
+  loadTasks = () => {
+    if (!this.state.uuid) { return window.location.replace("/login") }
+    else{
       API.getTasks(this.state.uuid)
       .then(res => {
-        let todo = res.data.filter(task => {return (task.active)})
-        let faves = res.data.filter(task => {return (task.favorite && !task.active)})
-        let everythingElse = res.data.filter(task => {return (!task.favorite && !task.active)})
+        let firstThing = res.data.filter(task => task.topTask)
+        let faves = res.data.filter(task => {return (task.favorite && !task.topTask)})
+        let todo = res.data.filter(task => {return (task.active && !task.favorite &&!task.topTask)})
+        let everythingElse = res.data.filter(task => {return (!task.favorite && !task.active && !task.topTask)})
+        let loadTime = {};
+        if (firstThing.length>0) {
+          const stashedTime = moment.duration(firstThing[0].stashedTime)
+          loadTime = {
+            stashedTime,
+            hours: stashedTime.hours(),
+            minutes: stashedTime.minutes(),
+            seconds: stashedTime.seconds(),
+            milliseconds: stashedTime.milliseconds(),
+            helmDropDisabled: true,
+          }
+        }
         this.setState({ 
+          helm: firstThing,
           left: todo, 
           right: faves, 
           bottom: everythingElse, 
           title: "", 
           notes: "",
+          ...loadTime,
           user: this.props.match.params.uuid,
         })
-          console.log("bottom", this.state.bottom)
-          console.log("right", this.state.right)
-          console.log("left", this.state.left)
-          console.log("helm", this.state.helm)
+        console.log("bottom", this.state.bottom)
+        console.log("right", this.state.right)
+        console.log("left", this.state.left)
+        console.log("helm", this.state.helm)
+        console.log("stashedTime", this.state.stashedTime)
       })
       .catch(err => console.log(err));
     }
@@ -170,13 +205,16 @@ class Dashboard extends Component {
     this.setState(title, notes)
   }
   
-  updateTask = (id, destination)  => {
+  updateTask = (result)  => {
     let newStatus = {} 
-      if (destination === "left") { newStatus = {active: true} }
-      if (destination === "right") { newStatus = {favorite: true, active: false}}
-      if (destination === "bottom") { newStatus = {favorite: false, active: false}}
+      if (result.destination.droppableId === "left") { newStatus = {active: true} }
+      if (result.destination.droppableId === "right") { newStatus = {favorite: true}}
+      if (result.destination.droppableId === "bottom") { newStatus = {favorite: false, active: false}}
+      if (result.destination.droppableId === "helm") { newStatus = {topTask: true}}
+      if (result.source.droppableId === "helm") { newStatus = {...newStatus, topTask: false}}
+      
     const taskData = {
-      id,
+      id: result.draggableId,
       ...newStatus
     }
     console.log("taskData", taskData)
@@ -193,9 +231,11 @@ class Dashboard extends Component {
     console.log("seconds",this.state.seconds)
     console.log("startTime",this.state.startTime)
     console.log("stashedTime",this.state.stashedTime)
+    console.log("this.state.helm",this.state.helm)
+    console.log("this.state.helmDropDisabled",this.state.helmDropDisabled)
   };
 
-  handleFormSubmit = event => {
+  createTask = event => {
     event.preventDefault();
     if (this.state.title) {
       API.saveTask({
@@ -203,7 +243,7 @@ class Dashboard extends Component {
         notes: this.state.notes,
         UserUuid: this.state.uuid,
         favorite: this.state.isfavorite,
-        active: this.state.isActive
+        topTask: true
       })
       .then(res => this.loadTasks())
       .catch(err => console.log(err));
@@ -213,15 +253,15 @@ class Dashboard extends Component {
   calculateTimeDiff = (startTime, stashedTime) => {
     let timeDiff = moment.duration(moment().diff(startTime));
     if (stashedTime) timeDiff = timeDiff.add(stashedTime);
-
+    console.log(timeDiff)
     return timeDiff;
   };
 
-  startTimer = (task) => {
-    if(this.state.helmDropDisabled && !this.state.isTimerStarted) {
+  startTimer = () => {
+    if(this.state.helm && !this.state.isTimerStarted) {
       const startTime = moment();
       const updateTimer = () => {
-        const timeDiff = this.calculateTimeDiff(startTime, task.stashedTime);
+        const timeDiff = this.calculateTimeDiff(startTime, this.state.stashedTime);
         this.setState({
           startTime,
           hours: timeDiff.hours(),
@@ -235,22 +275,24 @@ class Dashboard extends Component {
     };
   };
 
-  stopTimer = (task) => {
+  stopTimer = () => {
     if (this.state.isTimerStarted) {
       clearInterval(this.state.intervalTimer);
       const timeSpent = moment.duration(moment().diff(this.state.startTime));
-      timeSpent.add(task.stashedTime);
+      timeSpent.add(this.state.stashedTime);
+      console.log("timeSpent",timeSpent)
       this.setState({
         startTime: null,
         isTimerStarted: false,
-        intervalTimer: null
+        intervalTimer: null,
+        stashedTime: timeSpent
       })
       const taskData ={
-        id: task.id,
+        id: this.state.helm[0].id,
         stashedTime: timeSpent
       }
       API.updateTask(taskData)
-        .then(res => console.log(res.config.data))
+        .then(res => console.log("res.config.data",res.config.data))
         .catch(err => console.log(err))
     };
   };
@@ -275,87 +317,89 @@ class Dashboard extends Component {
                     />
                     ))) : (
                     <div>
-                      Create a plan by dragging tasks to this bar
+                      Create a to-do list by dragging tasks to this bar
                     </div>
                   )}
                 </List>
               </Col>
               <Col size="md-4">
-                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled} onChange={this.taskToHelm(this.state.helm)}>
-                {(this.state.helm.length >0 && this.state.helm.length <2) ? (
-                    this.state.helm.map((task, index) => (
+                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled} isDragDisabled={this.state.isTimerStarted}>
+                {(this.state.helm.length > 0)? ([
+                  (this.state.helm.map((task, index) => (
                       <ListItem
+                      isDragDisabled={this.state.isTimerStarted}
                       key={task.id}
                       draggableId={task.id}
                       title={task.title}
                       index={index}
                       deleteTask={this.deleteTask}
                       />
-                    ))
-                  ) : (
+                  ))),
                     <div>
-                      Drag your Top Task here to start tracking.
+                      <h1>
+                        {handleZerosPadding("hours", this.state.hours)}:
+                        {handleZerosPadding("minutes", this.state.minutes)}:
+                        {handleZerosPadding("seconds", this.state.seconds)}.
+                        {handleZerosPadding("milliseconds", this.state.milliseconds)}
+                      </h1>
+                      {(!this.state.isTimerStarted) ? 
+                          (<OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
+                        ):(
+                          <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
+                      )}
+                      <br></br>
+                      <br></br>
+                      <span>
+                        Click here to create a new task
+                      </span>
                     </div>
-                )}
-                <div>
-                  <h1>
-                    {handleZerosPadding("hours", this.state.hours)}:
-                    {handleZerosPadding("minutes", this.state.minutes)}:
-                    {handleZerosPadding("seconds", this.state.seconds)}:
-                    {handleZerosPadding("milliseconds", this.state.milliseconds)}
-                  </h1>
-                  {(!this.state.isTimerStarted) ? 
-                    (<OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
-                  ):(
-                    <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
-                  )}
-                </div>
-                <form>
-                  <h1>Create a new task</h1>
+                  ]) : (
+                    <form>
+                    <div>Drag your Top Task here or Create New Task to begin tracking</div>,
                   <Input
                     value={this.state.title}
                     onChange={this.handleInputChange}
                     name="title"
                     placeholder="Task Name (required)"
-                  />
+                    />
                   <TextArea
                     value={this.state.notes}
                     onChange={this.handleInputChange}
                     name="notes"
                     placeholder="Notes (Optional)"
-                  />
+                    />
                   <Row>
                     <Col size="md-6">
                       <label>
-                        <input
-                          name="isActive"
-                          type="checkbox"
-                          value={this.state.isActive}
-                          onChange={this.handleInputChange}
-                        />
-                        Add to Today's Tasks
-                      </label>
-                      <br></br>
                       <label>
+                          <input
+                            name="isfavorite"
+                            type="radio"
+                            value={this.state.isActive}
+                            onChange={this.handleInputChange}
+                            />
+                          Add to Today's Tasks
+                        </label>
                         <input
                           name="isfavorite"
-                          type="checkbox"
+                          type="radio"
                           value={this.state.isfavorite}
                           onChange={this.handleInputChange}
-                        />
+                          />
                         Add to Favorites
                       </label>
                     </Col>
                     <Col size="md-6">
                       <FormBtn
                         disabled={!this.state.title}
-                        onClick={this.handleFormSubmit}
-                      >
+                        onClick={this.createTask}
+                        >
                         Add Task to Library
                       </FormBtn>
                     </Col>
                   </Row> 
                 </form>
+                  )}
                 </List>
               </Col>
               <Col size="md-4">

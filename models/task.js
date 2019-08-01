@@ -34,7 +34,7 @@ module.exports = function(sequelize, DataTypes) {
       default: null,
     },
     stashedTime: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSON,
       default: null,
     },
     taskCreated: {
@@ -46,6 +46,10 @@ module.exports = function(sequelize, DataTypes) {
       default: false,
     },
     active: {
+      type: DataTypes.BOOLEAN,
+      default: false,
+    },
+    topTask: {
       type: DataTypes.BOOLEAN,
       default: false,
     }

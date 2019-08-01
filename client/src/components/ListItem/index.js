@@ -20,6 +20,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 function ListItem(props) {
   return(
     <Draggable
+      isDragDisabled={props.isDragDisabled}
       draggableId={props.draggableId}
       index={props.index}>
       {(provided, snapshot) => (

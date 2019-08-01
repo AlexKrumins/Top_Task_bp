@@ -1,15 +1,22 @@
+
 import React, { Component } from "react";
+// import { Stopwatch } from "hooked-react-stopwatch";
 // import { Redirect } from 'react-router-dom'
 // import ReactDOM from 'react-dom';
 
 import Title from "../components/Title";
 import { Col, Row, Container } from "../components/Grid";
-import { Input, TextArea, FormBtn } from "../components/Form"
-import { DragDropContext, Droppable} from 'react-beautiful-dnd';
-import Stopwatch from "../components/Stopwatch";
-import API from "../utils/API"
+import { Input, TextArea, FormBtn, Checkbox } from "../components/Form";
+import { DragDropContext } from 'react-beautiful-dnd';
+import { handleZerosPadding } from "../components/Stopwatch/utils";
+import API from "../utils/API";
+import List from '../components/List';
 import ListItem from '../components/ListItem';
+import HList from '../components/HList';
 import HListItem from '../components/HListItem';
+import moment from "moment";
+import { FaPlay, FaPause } from "react-icons/fa";
+import OptimizedIcon from "../components/OptimizedIcon";
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -33,110 +40,103 @@ const move = (source, destination, droppableSource, droppableDestination) => {
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
     result[droppableDestination.droppableId] = destClone;
-
     return result;
 };
 
-const grid = 8;
 
-
-const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'lightblue' : 'lightgrey',
-    padding: grid,
-    width: 250
-});
-
-const getHListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'lightblue' : 'lightgrey',
-    display: 'flex',
-    padding: grid,
-    overflow: 'auto',
-});
-
-class Dashboard extends Component {
+class devDashboard extends Component {
   state = {
     left: [],
     right: [],
     bottom: [],
+    helm: [],
+
     title: "",
     notes: "",
     uuid: this.props.match.params.uuid,
-
-    // helm: [],
     isfavorite: false,
     isActive: false,
+    helmDropDisabled: false,
+
+    startTime: null,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+    stashedTime: 0,
+    isTimerStarted: false,
+    intervalTimer: null
   };
+
   
-  
+
   id2List = {
     left: 'left',
     right: 'right',
     bottom: 'bottom',
-    creationStation: 'helm',
+    helm: 'helm',
   };
   
+
     
   componentDidMount = () => {
     this.loadTasks();
+    clearInterval(this.state.intervalTimer)
   }
-  
+
+
   getList = id => this.state[this.id2List[id]];
 
   onDragEnd = (result) => {
-    const { source, destination } = result;
-    console.log("onDrageEnd result", result)
+    console.log("onDragEnd result", result)
+    const { source, destination, } = result;
+    const draggableId = result.draggableId;
     // dropped outside the list
     if (!destination) {
-        return;
-    }
-
-    if (source.droppableId === destination.droppableId) {
-        const tasks = reorder(
-            this.getList(source.droppableId),
-            source.index,
-            destination.index
-        );
-
-        let state = { tasks };
-
-        
-        if (source.droppableId === 'left') {
-          state = { left: tasks };
-        }
-        
-        if (source.droppableId === 'right') {
-          state = { right: tasks };
-        }
-        
-        if (source.droppableId === 'bottom') {
-            state = { bottom: tasks };
-        }
-
-        this.setState(state);
-    } else {
-      const result = move(
-          this.getList(source.droppableId),
-          this.getList(destination.droppableId),
-          source,
-          destination
+      return;
+    } else if (this.state.helmDropDisabled && destination.droppableId === "helm") {
+      return;
+    } else if (source.droppableId === destination.droppableId) {
+      const tasks = reorder(
+        this.getList(source.droppableId),
+        source.index,
+        destination.index
       );
-
-      if(result.left){
-        this.setState({left: result.left})
-      };
-        if(result.right){
-        this.setState({right: result.right})
-      };
-      if(result.bottom){
-        this.setState({bottom: result.bottom})
+      let state = { tasks };
+      if (source.droppableId === 'left') {state = { left: tasks }};
+      if (source.droppableId === 'right') {state = { right: tasks }};
+      if (source.droppableId === 'bottom') {state = { bottom: tasks }};
+      if (source.droppableId === 'helm') {state = { helm: tasks }}
+      this.setState(state);
+    } else {
+      const moveResult = move(
+        this.getList(source.droppableId),
+        this.getList(destination.droppableId),
+        source,
+        destination
+        );
+      this.updateTask(draggableId, destination.droppableId);
+      console.log("result", result)
+      console.log("moveResult", moveResult)
+      if(moveResult.left){this.setState({left: moveResult.left})};
+      if(moveResult.right){this.setState({right: moveResult.right})};
+      if(moveResult.bottom){this.setState({bottom: moveResult.bottom})};
+      if(moveResult.helm){
+        if (moveResult.helm.length < 1){
+          console.log("result 126")
+          this.setState({helm: moveResult.helm, helmDropDisabled: false})
+        } else {
+          this.setState({helm: moveResult.helm, helmDropDisabled: true})
+        };
       };
     };
+    console.log("this.state.helm",this.state.helm)
+    console.log("this.state.helmDropDisabled",this.state.helmDropDisabled)
   };
-
-  loadTasks = () => {
-    console.log(this.state.uuid)
-    if (!this.state.uuid) { return window.location.replace("/login") }
-    else{
+      
+      loadTasks = () => {
+        if (!this.state.uuid) { return window.location.replace("/login") }
+        else{
       API.getTasks(this.state.uuid)
       .then(res => {
         let todo = res.data.filter(task => {return (task.active)})
@@ -153,6 +153,7 @@ class Dashboard extends Component {
           console.log("bottom", this.state.bottom)
           console.log("right", this.state.right)
           console.log("left", this.state.left)
+          console.log("helm", this.state.helm)
       })
       .catch(err => console.log(err));
     }
@@ -161,17 +162,40 @@ class Dashboard extends Component {
   deleteTask = id => {
     API.deleteTask(id)
       .then(res => this.loadTasks())
-      .catch(err => console.log(err));
+      .catch(err => console.log(err))
+  };
+
+  taskToHelm = (task) => {
+    console.log(task)
+    const title = task.title;
+    const notes = task.notes;
+    this.setState(title, notes)
   }
+  
+  updateTask = (id, destination)  => {
+    if (destination === "helm") {return};
+    let newStatus = {} 
+      if (destination === "left") { newStatus = {active: true} }
+      if (destination === "right") { newStatus = {favorite: true, active: false}}
+      if (destination === "bottom") { newStatus = {favorite: false, active: false}}
+    const taskData = {
+      id,
+      ...newStatus
+    }
+    console.log("taskData", taskData)
+    API.updateTask(taskData)
+      .then(res => console.log(res.config.data))
+      .catch(err => console.log(err))
+  };
 
   handleInputChange = event => {
     const target = event.target
     const value = target.type === "checkbox" ? target.checked : target.value
     const name = target.name;
-    console.log(name, value)
-    this.setState({
-      [name]: value
-    });
+    this.setState({[name]: value});
+    console.log("seconds",this.state.seconds)
+    console.log("startTime",this.state.startTime)
+    console.log("stashedTime",this.state.stashedTime)
   };
 
   handleFormSubmit = event => {
@@ -188,130 +212,66 @@ class Dashboard extends Component {
       .catch(err => console.log(err));
     }
   };
+/////////////////////////// Stopwatch Controls
+  calculateTimeDiff = (startTime, stashedTime) => {
+    let timeDiff = moment.duration(moment().diff(startTime));
+    if (stashedTime) timeDiff = timeDiff.add(stashedTime);
+
+    return timeDiff;
+  };
+
+  startTimer = () => {
+    if(this.state.helmDropDisabled && !this.state.isTimerStarted) {
+      const startTime = moment();
+      const updateTimer = () => {
+        const timeDiff = this.calculateTimeDiff(startTime, this.state.helm.stashedTime);
+        this.setState({
+          startTime,
+          hours: timeDiff.hours(),
+          minutes: timeDiff.minutes(),
+          seconds: timeDiff.seconds(),
+          milliseconds: timeDiff.milliseconds(),
+          isTimerStarted: true,
+        });
+      };
+      this.setState({intervalTimer : setInterval(updateTimer, 50)});
+    };
+  };
+
+  stopTimer = () => {
+    console.log(this.state.helm)
+    if (this.state.isTimerStarted) {
+      clearInterval(this.state.intervalTimer);
+      const timeSpent = moment.duration(moment().diff(this.state.startTime));
+      timeSpent.add(this.state.helm.stashedTime);
+      this.setState({
+        startTime: null,
+        isTimerStarted: false,
+        intervalTimer: null
+      })
+      const taskData ={
+        id: this.state.helm.id,
+        stashedTime: timeSpent
+      }
+      console.log("taskData", taskData)
+      API.updateTask(taskData)
+        .then(res => console.log(res.config.data))
+        .catch(err => console.log(err))
+    };
+  };
 
   render = () => {
     return (
       <Container fluid>
         <Title>Top Task Dashboard</Title>
-          <DragDropContext onDragEnd={this.onDragEnd}>
-        <Row>
+        <DragDropContext onDragEnd={this.onDragEnd}>
+          <Row>
             <Col size="md-4">
-            <h2>Today's Tasks</h2>
-              <Droppable droppableId="left">
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}>
-                    {(this.state.left.length >0 ) ? (
-                      this.state.left.map((task, index) => (
-                      <ListItem
-                        key={task.id}
-                        draggableId={task.id}
-                        title={task.title}
-                        index={index}
-                        deleteTask={this.deleteTask}
-                      />
-                      ))) : (
-                        <div>
-                          Create a plan by dragging tasks to this bar
-                        </div>
-                      )
-                    }
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </Col>
-            <Col size="md-4">
-              <Stopwatch />
-              <form>
-                <h1>Create a new task</h1>
-                <Input
-                  value={this.state.title}
-                  onChange={this.handleInputChange}
-                  name="title"
-                  placeholder="Task Name (required)"
-                />
-                <TextArea
-                  value={this.state.notes}
-                  onChange={this.handleInputChange}
-                  name="notes"
-                  placeholder="Notes (Optional)"
-                />
-                <Row>
-                  <Col size="md-6">
-                    <label>
-                      <input
-                        name="isActive"
-                        type="checkbox"
-                        value={this.state.isActive}
-                        onChange={this.handleInputChange}
-                      />
-                      Add to Today's Tasks
-                    </label>
-                    <br></br>
-                    <label>
-                      <input
-                        name="isfavorite"
-                        type="checkbox"
-                        value={this.state.isfavorite}
-                        onChange={this.handleInputChange}
-                      />
-                      Add to Favorites
-                    </label>
-                  </Col>
-                  <Col size="md-6">
-                    <FormBtn
-                      disabled={!this.state.title}
-                      onClick={this.handleFormSubmit}
-                    >
-                      Add Task to Library
-                    </FormBtn>
-                  </Col>
-                </Row> 
-              </form>
-            </Col>
-            <Col size="md-4">
-            <h2>Favorites</h2>
-              <Droppable droppableId="right">
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      style={getListStyle(snapshot.isDraggingOver)}>
-                      {(this.state.right.length > 0) ? (
-                        this.state.right.map((task, index) => (
-                          <ListItem
-                          key={task.id}
-                          draggableId={task.id}
-                          title={task.title}
-                          index={index}
-                          deleteTask={this.deleteTask}
-                        />
-                        ))) : (
-                          <div>
-                          Drag tasks here to add them to your favorites
-                          </div>
-                        )
-                      }
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-            </Col>
-        </Row>
-        <Row>
-          <h2>Recently Added Tasks</h2>
-        </Row>
-        <Row>
-          <Droppable droppableId="bottom" direction="horizontal">
-            {(provided, snapshot) => (
-              <div
-              ref={provided.innerRef}
-              style={getHListStyle(snapshot.isDraggingOver)}
-              >
-                {(this.state.bottom.length > 0) ? (
-                  this.state.bottom.map((task, index) => (
-                    <HListItem
+              <h2>Today's Tasks</h2>
+              <List internalScroll="true" droppableId="left">
+                {this.state.left.length ? (
+                  this.state.left.map((task, index) => (
+                  <ListItem
                     key={task.id}
                     draggableId={task.id}
                     title={task.title}
@@ -319,21 +279,135 @@ class Dashboard extends Component {
                     deleteTask={this.deleteTask}
                   />
                   ))) : (
-                    <div>
-                      Start Adding Tasks to your library. They'll appear down here.
+                  <div>
+                    Create a plan by dragging tasks to this bar
+                  </div>
+                )}
+              </List>
+            </Col>
+            <Col size="md-6">
+              <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled} onChange={this.taskToHelm}>
+                {this.state.helm.length ? (
+                  this.state.helm.map((task, index) => (
+                    <ListItem
+                      key={task.id}
+                      draggableId={task.id}
+                      title={task.title}
+                      index={index}
+                      deleteTask={this.deleteTask}
+                    />
+                  )),
+                  <div>
+                    <h1>
+                      Clock
+                      {handleZerosPadding("hours", this.state.hours)}:
+                      {handleZerosPadding("minutes", this.state.minutes)}:
+                      {handleZerosPadding("seconds", this.state.seconds)}:
+                      {handleZerosPadding("milliseconds", this.state.milliseconds)}
+                    </h1>
                     </div>
-                  )
-                }
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </Row>
-      </DragDropContext>
-
+                    
+                    // {!this.state.isTimerStarted ? 
+                    //   <OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
+                    //   :
+                    //   <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
+                    // }
+                ) : (
+                  <div>
+                    Drag your Top Task here to start tracking.
+                  <form>
+                    <h1>Create a new task</h1>
+                    <Input
+                      value={this.state.title}
+                      onChange={this.handleInputChange}
+                      name="title"
+                      placeholder="Task Name (required)"
+                      />
+                    <TextArea
+                      value={this.state.notes}
+                      onChange={this.handleInputChange}
+                      name="notes"
+                      placeholder="Notes (Optional)"
+                      />
+                    <Row>
+                      <Col size="md-6">
+                        <label>
+                          <Checkbox
+                            name="isActive"
+                            type="checkbox"
+                            value={this.state.isActive}
+                            onChange={this.handleInputChange}
+                            />
+                          Add to Today's Tasks
+                        </label>
+                        <br></br>
+                        <label>
+                          <Checkbox
+                            name="isfavorite"
+                            type="checkbox"
+                            value={this.state.isfavorite}
+                            onChange={this.handleInputChange}
+                            />
+                          Add to Favorites
+                        </label>
+                      </Col>
+                      <Col size="md-6">
+                        <FormBtn
+                          disabled={!this.state.title}
+                          onClick={this.handleFormSubmit}
+                          >
+                          Add Task to Library
+                        </FormBtn>
+                      </Col>
+                    </Row> 
+                  </form>
+                </div>
+                )}
+              </List>
+            </Col>
+            <Col size="md-4">
+            <h2>Favorites</h2>
+              <List droppableId="right">
+                {(this.state.right.length > 0) ? (
+                  this.state.right.map((task, index) => (
+                    <ListItem
+                    key={task.id}
+                    draggableId={task.id}
+                    title={task.title}
+                    index={index}
+                    deleteTask={this.deleteTask}
+                  />
+                  ))) : (
+                  <div>
+                    Drag tasks here to add them to your favorites
+                  </div>
+                )}
+              </List>
+            </Col>
+          </Row>
+          <Row>
+            <h2>Recently Completed Tasks</h2>
+            <HList internalScroll="true" droppableId="bottom" direction="horizontal">
+              {(this.state.bottom.length > 0) ? (
+                this.state.bottom.map((task, index) => (
+                <HListItem
+                  key={task.id}
+                  draggableId={task.id}
+                  title={task.title}
+                  index={index}
+                  deleteTask={this.deleteTask}
+                />
+                ))) : (
+                <div>
+                  Start Adding Tasks to your library. They'll appear down here.
+                </div>
+              )}
+            </HList>
+          </Row>
+        </DragDropContext>
       </Container>
     );
-  }
-}
+  };
+};
 
-export default Dashboard;
+export default devDashboard;
