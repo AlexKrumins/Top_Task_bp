@@ -1,5 +1,5 @@
 import React from 'react';
-import { DeleteBtn } from "../Form";
+import { SuccessBtn } from "../Form";
 import { Draggable } from 'react-beautiful-dnd';
 
 const grid = 8;
@@ -35,7 +35,13 @@ function ListItem(props) {
           <strong>
             {props.title}
           </strong>
-          <DeleteBtn onClick={() => props.deleteTask(props.draggableId)} />  
+          <SuccessBtn onClick={() => {
+            props.completeTask({
+              draggableId: props.draggableId,
+              source: {droppableId: props.source},
+              destination: {droppableId: "bottom"},
+            })
+          }}/>  
         </div>
       )}
     </Draggable>

@@ -1,4 +1,7 @@
 import React from "react";
+import { FaSkullCrossbones, FaCheckSquare } from "react-icons/fa";
+import OptimizedIcon from "../OptimizedIcon";
+
 import "./style.css";
 
 // This file exports the Input, TextArea, and FormBtn components
@@ -36,10 +39,17 @@ export function FormBtn(props) {
   );
 }
 
+export function SuccessBtn(props) {
+  return (
+    <span className="success-btn" {...props} role="button" tabIndex="0">
+      <OptimizedIcon Icon={FaCheckSquare} />
+    </span>
+  );
+}
 export function DeleteBtn(props) {
   return (
     <span className="delete-btn" {...props} role="button" tabIndex="0">
-      ✗
+      <OptimizedIcon Icon={FaSkullCrossbones} />
     </span>
   );
 }

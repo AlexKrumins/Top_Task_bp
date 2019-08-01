@@ -113,11 +113,7 @@ class Dashboard extends Component {
         source,
         destination
       );
-      // const result = {
-      //   id: draggableId,
-      //   source: source.droppableId,
-      //   destination: destination.droppabbleId,
-      // }
+
       this.updateTask(result);
       if(moveResult.left){this.setState({left: moveResult.left})};
       if(moveResult.right){this.setState({right: moveResult.right})};
@@ -312,7 +308,8 @@ class Dashboard extends Component {
                       draggableId={task.id}
                       title={task.title}
                       index={index}
-                      deleteTask={this.deleteTask}
+                      completeTask={this.onDragEnd}
+                      source = {"left"}
                     />
                     ))) : (
                     <div>
@@ -331,7 +328,8 @@ class Dashboard extends Component {
                       draggableId={task.id}
                       title={task.title}
                       index={index}
-                      deleteTask={this.deleteTask}
+                      completeTask={this.onDragEnd}
+                      source = {"helm"}
                       />
                   ))),
                     <div>
@@ -415,7 +413,8 @@ class Dashboard extends Component {
                       draggableId={task.id}
                       title={task.title}
                       index={index}
-                      deleteTask={this.deleteTask}
+                      completeTask={this.onDragEnd}
+                      source = {"right"}
                     />
                     ))) : (
                     <div>
@@ -426,7 +425,7 @@ class Dashboard extends Component {
               </Col>
           </Row>
           <Row>
-            <h2>Recently Added Tasks</h2>
+            <h2>Recently Completed Tasks</h2>
           </Row>
           <Row>
             <HList internalScroll="true" droppableId="bottom" direction="horizontal">
@@ -441,7 +440,7 @@ class Dashboard extends Component {
                 />
                 ))) : (
                 <div>
-                  Start Adding Tasks to your library. They'll appear down here.
+                  As you complete tasks, they'll appear down here.
                 </div>
               )}
             </HList>
