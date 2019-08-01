@@ -245,7 +245,10 @@ class Dashboard extends Component {
         favorite: this.state.isfavorite,
         topTask: true
       })
-      .then(res => this.loadTasks())
+      .then(res => {
+        this.loadTasks()
+        this.startTimer()
+      })
       .catch(err => console.log(err));
     }
   };
