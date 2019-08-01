@@ -1,22 +1,22 @@
 import React from "react";
 
-function Nav() {
+function Nav(props) {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <a className="navbar-brand" href="/">
+      <a className="navbar-brand" href={"/dashboard/" + props.uuid}>
         Top Task Time Tracker
       </a>
       <span className="navbar-brand"> || </span>
-      <a className="navbar-brand" href="/dashboard">
+      <a className="navbar-brand" href={"/dashboard/" + props.uuid}>
         Dashboard
       </a>
       <span className="navbar-brand"> || </span>
-      <a className="navbar-brand" href="/report">
+      <a className="navbar-brand" href={"/report/" + props.uuid}>
         Review Tasks
       </a>
       <span className="navbar-brand"> || </span>
       <a className="navbar-brand" href="/login">
-        Login
+        {props.uuid ? "Logout" : "Login"}
       </a>
       <span className="navbar-brand"> || </span>
       <a className="navbar-brand" href="/signup">

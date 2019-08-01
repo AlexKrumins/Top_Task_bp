@@ -4,6 +4,7 @@ import React, { Component } from "react";
 // import ReactDOM from 'react-dom';
 
 import Title from "../components/Title";
+import Nav from "../components/Nav";
 import { Col, Row, Container } from "../components/Grid";
 import { Input, TextArea, FormBtn } from "../components/Form";
 import { DragDropContext } from 'react-beautiful-dnd';
@@ -80,6 +81,7 @@ class Dashboard extends Component {
     
   componentDidMount = () => {
     this.loadTasks();
+    // console.log(this.props)
     clearInterval(this.state.intervalTimer)
   }
 
@@ -295,6 +297,7 @@ class Dashboard extends Component {
   render = () => {
     return (
       <Container fluid>
+      <Nav uuid={this.state.uuid}/>
         <Title>Top Task Dashboard</Title>
         <DragDropContext onDragEnd={this.onDragEnd}>
           <Row>
