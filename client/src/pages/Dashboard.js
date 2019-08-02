@@ -295,16 +295,15 @@ class Dashboard extends Component {
   };
 
   fullStop = async () => {
-    const res = await this.stopTimer()
-    console.log("res", res)
-      const newResult = {
-        draggableId: this.state.helm[0].id,
-        destination: {droppableId: "left"},
-        source: {droppableId: "helm"},
-      }
+    await this.stopTimer()
+    const newResult = {
+      draggableId: this.state.helm[0].id,
+      destination: {droppableId: "bottom"},
+      source: {droppableId: "helm"},
+    }
     this.onDragEnd(newResult)
   }
-  
+
   render = () => {
     return (
       <Container fluid>
@@ -321,6 +320,7 @@ class Dashboard extends Component {
                       key={task.id}
                       draggableId={task.id}
                       title={task.title}
+                      notes={task.notes}
                       index={index}
                       completeTask={this.onDragEnd}
                       source = {"left"}
@@ -343,7 +343,7 @@ class Dashboard extends Component {
                       draggableId={task.id}
                       title={task.title}
                       index={index}
-                      completeTask={this.onDragEnd}
+                      completeTask={this.fullStop}
                       source = {"helm"}
                       />
                   ))),
@@ -359,8 +359,6 @@ class Dashboard extends Component {
                         ):(
                           <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
                       )}
-                      <br></br>
-                      <br></br>
                       <SmallButton onClick={this.fullStop}>
                         Click here to create a new task
                       </SmallButton>

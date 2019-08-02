@@ -36,10 +36,6 @@ function ListItem(props) {
               snapshot.isDragging,
               provided.draggableProps.style
           )}>
-          <strong>
-            {props.title}
-            {(props.source !== "helm") ? displayTime: (null)}
-          </strong>
           <SuccessBtn onClick={() => {
             props.completeTask({
               draggableId: props.draggableId,
@@ -47,6 +43,11 @@ function ListItem(props) {
               destination: {droppableId: "bottom"},
             })
           }}/>  
+          <strong>
+            {props.title}
+            {(props.source !== "helm") ? displayTime: (null)}
+          </strong>
+          <p>{props.notes}</p>
         </div>
       )}
     </Draggable>
