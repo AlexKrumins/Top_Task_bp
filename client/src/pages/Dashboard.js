@@ -6,7 +6,7 @@ import React, { Component } from "react";
 import Title from "../components/Title";
 import Nav from "../components/Nav";
 import { Col, Row, Container } from "../components/Grid";
-import { Input, TextArea, FormBtn } from "../components/Form";
+import { Input, TextArea, FormBtn, SmallButton, Checkbox } from "../components/Form";
 import { DragDropContext } from 'react-beautiful-dnd';
 import { handleZerosPadding } from "../components/Stopwatch/utils";
 import API from "../utils/API";
@@ -289,11 +289,22 @@ class Dashboard extends Component {
         stashedTime: timeSpent
       }
       API.updateTask(taskData)
-        .then(res => console.log("res.config.data",res.config.data))
+        .then(res => {return res})
         .catch(err => console.log(err))
     };
   };
 
+  fullStop = async () => {
+    const res = await this.stopTimer()
+    console.log("res", res)
+      const newResult = {
+        draggableId: this.state.helm[0].id,
+        destination: {droppableId: "left"},
+        source: {droppableId: "helm"},
+      }
+    this.onDragEnd(newResult)
+  }
+  
   render = () => {
     return (
       <Container fluid>
@@ -350,9 +361,9 @@ class Dashboard extends Component {
                       )}
                       <br></br>
                       <br></br>
-                      <span>
+                      <SmallButton onClick={this.fullStop}>
                         Click here to create a new task
-                      </span>
+                      </SmallButton>
                     </div>
                   ]) : (
                     <form>
@@ -370,25 +381,31 @@ class Dashboard extends Component {
                     placeholder="Notes (Optional)"
                     />
                   <Row>
-                    <Col size="md-6">
-                      <label>
-                      <label>
-                          <input
+                    <Col size="md-4">
+                      {!this.state.isfavorite ?
+                        <label>
+                          <Checkbox
                             name="isActive"
-                            type="radio"
+                            type="checkbox"
                             value={true}
                             onChange={this.handleInputChange}
                             />
                           Add to Today's Tasks
+                        </label> 
+                        : null
+                      }
+                      {!this.state.isActive ?
+                        <label>
+                          <Checkbox
+                            name="isfavorite"
+                            type="checkbox"
+                            value={true}
+                            onChange={this.handleInputChange}
+                            />
+                          Add to Favorites
                         </label>
-                        <input
-                          name="isfavorite"
-                          type="radio"
-                          value={true}
-                          onChange={this.handleInputChange}
-                          />
-                        Add to Favorites
-                      </label>
+                        : null
+                      }
                     </Col>
                     <Col size="md-6">
                       <FormBtn

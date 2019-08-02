@@ -39,6 +39,14 @@ export function FormBtn(props) {
   );
 }
 
+export function SmallButton(props) {
+  return (
+    <button className="btn btn-info" {...props} style={{ float: "right", marginBottom: 10 }} >
+      {props.children}
+    </button>
+  );
+}
+
 export function SuccessBtn(props) {
   return (
     <span className="success-btn" {...props} role="button" tabIndex="0">
