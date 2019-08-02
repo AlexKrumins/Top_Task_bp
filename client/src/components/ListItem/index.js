@@ -43,7 +43,7 @@ function ListItem(props) {
               destination: {droppableId: "bottom"},
             })
           }}/>  
-          <strong class="card-subtitle">
+          <strong className="card-subtitle">
             {props.title}
           </strong>
           <p>

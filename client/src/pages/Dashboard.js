@@ -80,8 +80,8 @@ class Dashboard extends Component {
 
     
   componentDidMount = () => {
+    console.log(this.state)
     this.loadTasks();
-    // console.log(this.props)
     clearInterval(this.state.intervalTimer)
   }
 
@@ -124,6 +124,8 @@ class Dashboard extends Component {
         if (moveResult.helm.length < 1){
           this.setState({
             helm: moveResult.helm, 
+            title: "",
+            notes: "",
             helmDropDisabled: false,
             stashedTime: 0,
             hours: 0,
@@ -153,10 +155,11 @@ class Dashboard extends Component {
   };
       
   loadTasks = () => {
-    if (!this.state.uuid) { return window.location.replace("/login") }
-    else{
+    if (!this.state.uuid) { return window.location.replace("/login") 
+    } else{
       API.getTasks(this.state.uuid)
       .then(res => {
+        console.log(res);
         let firstThing = res.data.filter(task => task.topTask)
         let faves = res.data.filter(task => {return (task.favorite && !task.topTask)})
         let todo = res.data.filter(task => {return (task.active && !task.favorite &&!task.topTask)})
@@ -178,8 +181,8 @@ class Dashboard extends Component {
           left: todo, 
           right: faves, 
           bottom: everythingElse, 
-          title: firstThing[0].title, 
-          notes: firstThing[0].notes,
+          title: "", 
+          notes: "",
           uuid: this.props.match.params.uuid,
           isfavorite: false,
           isActive: false,
@@ -244,7 +247,7 @@ class Dashboard extends Component {
       })
       .then(res => {
         this.loadTasks()
-        if (this.state.helm.length) this.startTimer()
+        this.startTimer()
       })
       .catch(err => console.log(err));
     }
@@ -286,21 +289,22 @@ class Dashboard extends Component {
         intervalTimer: null,
         stashedTime: timeSpent
       })
+      this.state.helm[0].stashedTime = timeSpent;
       const taskData ={
         id: this.state.helm[0].id,
         stashedTime: timeSpent
       }
       API.updateTask(taskData)
-        .then(res => {return res})
+        .then(res => console.log(res))
         .catch(err => console.log(err))
-    };
+    } else {return}
   };
 
   fullStop = async () => {
     await this.stopTimer()
     const newResult = {
       draggableId: this.state.helm[0].id,
-      destination: {droppableId: "bottom"},
+      destination: {droppableId: "left"},
       source: {droppableId: "helm"},
     }
     this.onDragEnd(newResult)
@@ -382,7 +386,7 @@ class Dashboard extends Component {
                     </div>
                   ]) : (
                     <form>
-                    <div>Drag your Top Task here or Create New Task to begin tracking</div>,
+                    <div>Drag your Top Task here or Create New Task to begin tracking</div>
                   <Input
                     value={this.state.title}
                     onChange={this.handleInputChange}
