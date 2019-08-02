@@ -43,11 +43,12 @@ function ListItem(props) {
               destination: {droppableId: "bottom"},
             })
           }}/>  
-          <strong>
+          <strong class="card-subtitle">
             {props.title}
-            {(props.source !== "helm") ? displayTime: (null)}
           </strong>
-          <p>{props.notes}</p>
+          <p>
+            {(props.source !== "helm") ? displayTime : null}
+          </p>
         </div>
       )}
     </Draggable>

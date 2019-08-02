@@ -2,7 +2,7 @@ import React from "react";
 
 function Nav(props) {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-secondary">
       <a className="navbar-brand" href={(props.uuid) ? ("/dashboard/" + props.uuid) : ("/login")}>
         Top Task Time Tracker
       </a>

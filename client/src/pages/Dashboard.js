@@ -143,6 +143,8 @@ class Dashboard extends Component {
           this.setState({
             helm: moveResult.helm, 
             helmDropDisabled: true,
+            title: moveResult.helm[0].title,
+            notes: moveResult.helm[0].title,
             ...loadTime,
           })
         };
@@ -176,8 +178,8 @@ class Dashboard extends Component {
           left: todo, 
           right: faves, 
           bottom: everythingElse, 
-          title: "", 
-          notes: "",
+          title: firstThing[0].title, 
+          notes: firstThing[0].notes,
           uuid: this.props.match.params.uuid,
           isfavorite: false,
           isActive: false,
@@ -205,7 +207,7 @@ class Dashboard extends Component {
       if (result.destination.droppableId === "right") { newStatus = {favorite: true}}
       if (result.destination.droppableId === "bottom") { newStatus = {favorite: false, active: false}}
       if (result.destination.droppableId === "helm") { newStatus = {topTask: true}}
-      if (result.source.droppableId === "helm") { newStatus = {...newStatus, topTask: false}}
+      if (result.source.droppableId === "helm") { newStatus = {...newStatus, topTask: false, title: this.state.title, notes:this.state.notes}}
       
     const taskData = {
       id: result.draggableId,
@@ -345,7 +347,22 @@ class Dashboard extends Component {
                       index={index}
                       completeTask={this.fullStop}
                       source = {"helm"}
+                      onChange={this.handleInputChange}
                       />
+                      // <TextArea
+                      // contenteditable="true" 
+                      // onChange={this.handleInputChange} 
+                      // value={this.state.notes}
+                      // name="notes"
+                      // placeholder={
+                      //   !this.state.notes ? 
+                      //   "(Click here to add/edit notes)"
+                      //   : null
+                      // }
+                      // >
+                      //   {this.state.notes ? this.state.notes : "(Click here to add/edit notes)"}
+                      // </TextArea>
+                      // </ListItem>
                   ))),
                     <div>
                       <h1>
@@ -355,10 +372,10 @@ class Dashboard extends Component {
                         {handleZerosPadding("milliseconds", this.state.milliseconds)}
                       </h1>
                       {(!this.state.isTimerStarted) ? 
-                          (<OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
-                        ):(
-                          <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
-                      )}
+                        <OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
+                      :
+                        <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
+                      }
                       <SmallButton onClick={this.fullStop}>
                         Click here to create a new task
                       </SmallButton>
