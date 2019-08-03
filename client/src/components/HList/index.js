@@ -7,6 +7,7 @@ const getHListStyle = isDraggingOver => ({
   background: isDraggingOver ? 'lightblue' : 'lightgrey',
   display: 'flex',
   padding: grid,
+  height: grid*20,
   overflow: 'auto',
 });
 

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Nav from "../components/Nav";
-import {FormBtn, Email, Password } from "../components/Form";
+import {FormBtn, Email, Password, SmallButton } from "../components/Form";
 import { Col, Row, Container } from "../components/Grid";
 
 import API from "../utils/API";
@@ -59,12 +59,12 @@ class SignUp extends Component {
                 onChange={this.handleInputChange}
                 name="password"
                 />
-              <FormBtn
+              <SmallButton
                 disabled={!(this.state.email && this.state.password)}
                 onClick={this.handleFormSubmit}
                 >
                 Create Account
-              </FormBtn>
+              </SmallButton>
             </form>
           </Col>
         </Row>

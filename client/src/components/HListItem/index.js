@@ -9,9 +9,8 @@ const grid = 8;
 const getHItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: 'none',
-  padding: grid * 2,
   margin: `0 ${grid}px 0 0`,
-
+  minWidth: 250,
   // change background colour if dragging
   background: isDragging ? 'lightgreen' : 'grey',
 
@@ -23,11 +22,11 @@ function HListItem(props) {
   const displayTime = (moment.utc(moment.duration(props.time, "ms").asMilliseconds()).format("H:mm:ss"))
 
   return(
-    <Draggable
+    <Draggable class="card mh-100"
       draggableId={props.draggableId}
       index={props.index}>
       {(provided, snapshot) => (
-        <div
+        <div class="card-body"
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
@@ -35,10 +34,10 @@ function HListItem(props) {
               snapshot.isDragging,
               provided.draggableProps.style
           )}>
-          <strong>
+          <h6 class="card-title">
             {props.title}
+          </h6>
             {(props.source !== "helm") ? displayTime: (null)}
-          </strong>
           <DeleteBtn onClick={() => props.deleteTask(props.draggableId)} />  
         </div>
       )}

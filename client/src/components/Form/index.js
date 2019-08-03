@@ -26,7 +26,6 @@ export function Checkbox(props) {
   return (
     <div className="form-group">
       <label>{props.children}</label>
-      <input type="checkbox" className="form-control" id="favorite" {...props}/>
     </div>
   );
 }
@@ -41,7 +40,7 @@ export function FormBtn(props) {
 
 export function SmallButton(props) {
   return (
-    <button className="btn btn-info" {...props} style={{ float: "right", marginBottom: 10 }} >
+    <button className="btn btn-success justify-content-center" {...props} style={{ float: "right", marginBottom: 10 }} >
       {props.children}
     </button>
   );
@@ -56,7 +55,7 @@ export function SuccessBtn(props) {
 }
 export function DeleteBtn(props) {
   return (
-    <span className="delete-btn" {...props} role="button" tabIndex="0">
+    <span className="skull border border-danger" {...props} role="button" tabIndex="0">
       <OptimizedIcon Icon={FaSkullCrossbones} />
     </span>
   );

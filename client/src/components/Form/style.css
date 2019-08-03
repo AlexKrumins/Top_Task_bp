@@ -2,16 +2,17 @@
   height: 30px !important;
   text-align: center;
   font-size: 1.25rem;
-  color: #2A77AE;
+  color: rgb(174, 165, 42);
   margin-bottom: 50px;
 }
 
-.delete-btn {
+.skull {
   float: right;
-  color: #e74944;
+  background-color: #e74944;
 }
 .success-btn {
   float: right;
   color: rgb(80, 221, 80);
+  
 }
 

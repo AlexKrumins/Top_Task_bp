@@ -10,6 +10,7 @@ import { Input, TextArea, FormBtn, SmallButton, Checkbox } from "../components/F
 import { DragDropContext } from 'react-beautiful-dnd';
 import { handleZerosPadding } from "../components/Stopwatch/utils";
 import API from "../utils/API";
+import Main from "../components/Main";
 import List from '../components/List';
 import ListItem from '../components/ListItem';
 import HList from '../components/HList';
@@ -17,6 +18,7 @@ import HListItem from '../components/HListItem';
 import moment from "moment";
 import { FaPlay, FaPause } from "react-icons/fa";
 import OptimizedIcon from "../components/OptimizedIcon";
+import "./style.css";
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
@@ -366,7 +368,7 @@ class Dashboard extends Component {
         <Title>Top Task Dashboard</Title>
         <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
           <Row>
-            <Col size="md-4">
+            <Col size="4">
               <h2>Today's Tasks</h2>
                 <List internalScroll="true" droppableId="left">
                   {(this.state.left.length >0 ) ? (
@@ -389,12 +391,13 @@ class Dashboard extends Component {
                   )}
                 </List>
               </Col>
-              <Col size="md-4">
-                <List droppableId="helm">
+              <Col class="container-fluid" size="md-4">
+              <h2>Top Task</h2>
+
+                <Main class="main-container" droppableId="helm">
                 {(this.state.helm.length > 0)? ([
                   (this.state.helm.map((task, index) => (
-                      <ListItem
-                      
+                    <ListItem
                       key={task.id}
                       draggableId={task.id}
                       title={task.title}
@@ -404,36 +407,27 @@ class Dashboard extends Component {
                       destination={task.favorite ? "right" : "left"}
                       onChange={this.handleInputChange}
                       />
-                      // <TextArea
-                      // contenteditable="true" 
-                      // onChange={this.handleInputChange} 
-                      // value={this.state.notes}
-                      // name="notes"
-                      // placeholder={
-                      //   !this.state.notes ? 
-                      //   "(Click here to add/edit notes)"
-                      //   : null
-                      // }
-                      // >
-                      //   {this.state.notes ? this.state.notes : "(Click here to add/edit notes)"}
-                      // </TextArea>
-                      // </ListItem>
                   ))),
-                    <div>
-                      <h1>
-                        {handleZerosPadding("hours", this.state.hours)}:
-                        {handleZerosPadding("minutes", this.state.minutes)}:
-                        {handleZerosPadding("seconds", this.state.seconds)}.
-                        {handleZerosPadding("milliseconds", this.state.milliseconds)}
-                      </h1>
-                      {(!this.state.isTimerStarted) ? 
-                        <OptimizedIcon Icon={FaPlay} onClick={this.startTimer} />
-                      :
-                        <OptimizedIcon Icon={FaPause} onClick={this.stopTimer} />
-                      }
-                      <SmallButton onClick={this.fullStop}>
-                        Click here to create a new task
-                      </SmallButton>
+                    <div className="row">
+                      <div className="col-6">
+                        <h1 className="text-left ml-2">
+                          {handleZerosPadding("hours", this.state.hours)}:
+                          {handleZerosPadding("minutes", this.state.minutes)}:
+                          {handleZerosPadding("seconds", this.state.seconds)}.
+                          {handleZerosPadding("milliseconds", this.state.milliseconds)}
+                        </h1>
+                        <SmallButton onClick={this.fullStop}>
+                          Click here to create a new task
+                        </SmallButton>
+                      </div>
+                      <div className="col-6 d-flex align-items-end">
+                        
+                        {(!this.state.isTimerStarted) ? 
+                          <OptimizedIcon  className={"display-2 m-4 "} Icon={FaPlay} onClick={this.startTimer} />
+                        :
+                          <OptimizedIcon className={"display-2 m-4"} Icon={FaPause} onClick={this.stopTimer} />
+                        }
+                      </div>
                     </div>
                   ]) : (
                     <form>
@@ -450,23 +444,14 @@ class Dashboard extends Component {
                     name="notes"
                     placeholder="Notes (Optional)"
                     />
-                  <Row>
-                    <Col size="md-4">
-                      {!this.state.isfavorite ?
-                        <label>
-                          <Checkbox
-                            name="isActive"
-                            type="checkbox"
-                            value={true}
-                            onChange={this.handleInputChange}
-                            />
-                          Add to Today's Tasks
-                        </label> 
-                        : null
-                      }
-                      {!this.state.isActive ?
-                        <label>
-                          <Checkbox
+                 
+
+                    <div className="form-group form-check">
+
+                      
+                      
+                        <label class="form-check-label ">
+                          <input
                             name="isfavorite"
                             type="checkbox"
                             value={true}
@@ -474,25 +459,24 @@ class Dashboard extends Component {
                             />
                           Add to Favorites
                         </label>
-                        : null
-                      }
-                    </Col>
-                    <Col size="md-6">
-                      <FormBtn
+                        
+                      
+                    
+                      <SmallButton
                         disabled={!this.state.title}
                         onClick={this.createTask}
-                      >
+                        >
                         {(this.state.isfavorite || this.state.isActive) ? (
                           "Add Task to Library"
-                        ):(
-                          "Start tracking this task"
-                        )}
-                      </FormBtn>
-                    </Col>
-                  </Row> 
+                          ):(
+                            "Start tracking this task"
+                            )}
+                      </SmallButton>
+                    
+                            </div>
                 </form>
                   )}
-                </List>
+                </Main>
               </Col>
               <Col size="md-4">
               <h2>Favorites</h2>
