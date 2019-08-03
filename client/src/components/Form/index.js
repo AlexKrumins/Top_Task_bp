@@ -1,5 +1,5 @@
 import React from "react";
-import { FaSkullCrossbones, FaCheckSquare } from "react-icons/fa";
+import { FaSkullCrossbones, FaCheckSquare, FaScroll } from "react-icons/fa";
 import OptimizedIcon from "../OptimizedIcon";
 
 import "./style.css";
@@ -26,6 +26,7 @@ export function Checkbox(props) {
   return (
     <div className="form-group">
       <label>{props.children}</label>
+      <input type="checkbox" className="form-check-input" id="favorite" {...props}/>
     </div>
   );
 }
@@ -49,14 +50,21 @@ export function SmallButton(props) {
 export function SuccessBtn(props) {
   return (
     <span className="success-btn" {...props} role="button" tabIndex="0">
-      <OptimizedIcon Icon={FaCheckSquare} />
+      <OptimizedIcon className="align-self-start m-2" Icon={FaCheckSquare} />
+    </span>
+  );
+}
+export function InfoBtn(props) {
+  return (
+    <span className="info-btn  btn-outline-light" {...props} role="button" tabIndex="0">
+      <OptimizedIcon className="align-self-start m-2" Icon={FaScroll} />
     </span>
   );
 }
 export function DeleteBtn(props) {
   return (
-    <span className="skull border border-danger" {...props} role="button" tabIndex="0">
-      <OptimizedIcon Icon={FaSkullCrossbones} />
+    <span className="skull border border-dark" {...props} role="button" tabIndex="0">
+      <OptimizedIcon className="align-self-start m-2" Icon={FaSkullCrossbones} />
     </span>
   );
 }

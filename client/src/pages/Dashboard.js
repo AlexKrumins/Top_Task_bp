@@ -242,6 +242,13 @@ class Dashboard extends Component {
     }
   };
 
+  getTaskInfo = id => {
+    API.getTaskInfo(id)
+      .then(res => {
+        console.log(res.data)
+        window.location.replace("/report/" + [res.data.id])
+      })
+  }
   deleteTask = id => {
     API.deleteTask(id)
       .then(res => this.loadTasks())
@@ -380,6 +387,7 @@ class Dashboard extends Component {
                       notes={task.notes}
                       index={index}
                       completeTask={this.onDragEnd}
+                      getTaskInfo={this.getTaskInfo}
                       source = {"left"}
                       destination={task.favorite ? "right" : "bottom"}
                       time = {task.stashedTime}
@@ -403,6 +411,7 @@ class Dashboard extends Component {
                       title={task.title}
                       index={index}
                       completeTask={this.fullStop}
+                      getTaskInfo={this.getTaskInfo}
                       source = {"helm"}
                       destination={task.favorite ? "right" : "left"}
                       onChange={this.handleInputChange}
@@ -489,6 +498,7 @@ class Dashboard extends Component {
                       title={task.title}
                       index={index}
                       completeTask={this.onDragEnd}
+                      getTaskInfo={this.getTaskInfo}
                       source = {"right"}
                       destination={"bottom"}
                       time = {task.stashedTime}

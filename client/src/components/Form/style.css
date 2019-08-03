@@ -13,6 +13,15 @@
 .success-btn {
   float: right;
   color: rgb(80, 221, 80);
+  background: white;
+  margin: 5px;
   
+}
+.info-btn {
+  float: right;
+  color: rgb(80, 94, 221);
+  background: white;
+  margin: 5px;
+
 }
 

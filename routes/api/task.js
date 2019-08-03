@@ -7,7 +7,9 @@ router.route("/")
   .post(taskController.create)
   .put(taskController.update);
 
-// Matches with "/api/task/:id"
+router.route("/by/:id")
+  .get(taskController.findOne);  
+  // Matches with "/api/task/:id"
 router.route("/:id")
   .get(taskController.findAll)
   .delete(taskController.remove);

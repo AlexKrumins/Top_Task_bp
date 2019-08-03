@@ -6,7 +6,10 @@ export default {
   getTasks: function(uuid) {
     return axios.get("/api/task/" + uuid);
   },
-  // Deletes the book with the given id
+
+  getTaskInfo: function(id) {
+    return axios.get("/api/task/by/" + id);
+  },
   deleteTask: function(id) {
     return axios.delete("/api/task/" + id);
   },

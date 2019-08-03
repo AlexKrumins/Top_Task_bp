@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from "moment";
 
-import { SuccessBtn } from "../Form";
+import { SuccessBtn, InfoBtn} from "../Form";
 import { Draggable } from 'react-beautiful-dnd';
 
 const grid = 8;
@@ -42,6 +42,9 @@ function ListItem(props) {
               source: {droppableId: props.source, index: props.index},
               destination: {droppableId: props.destination},
             })
+          }}/>  
+          <InfoBtn onClick={() => {
+            props.getTaskInfo(props.draggableId)
           }}/>  
           <strong className="card-subtitle">
             {props.title}
