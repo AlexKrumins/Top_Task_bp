@@ -112,7 +112,7 @@ class Dashboard extends Component {
       this.stopTimer()
     }
   }
-  onDragEnd = (result) => {
+  onDragEnd = async (result) => {
     console.log("onDragEnd result", result)
     const { source, destination, } = result;
     //top task is dragged away with no destination
@@ -143,7 +143,7 @@ class Dashboard extends Component {
         destination
       );
       if (destination.droppableId === "helm" && this.state.helm.length > 0) {
-        this.stopTimer()
+        await this.stopTimer()
         moveResult = swap(
           this.getList(source.droppableId),
           this.getList(destination.droppableId),
@@ -162,7 +162,7 @@ class Dashboard extends Component {
       if(moveResult.right){this.setState({right: moveResult.right})};
       if(moveResult.bottom){this.setState({bottom: moveResult.bottom})};
       if(moveResult.helm){
-        if (moveResult.helm.length < 1){
+        if (!moveResult.helm.length){
           this.setState({
             helm: moveResult.helm, 
             title: "",
@@ -246,21 +246,21 @@ class Dashboard extends Component {
       .catch(err => console.log(err))
   };
   
-  updateTask = (result)  => {
+  updateTask = (req, res)  => {
     let newStatus = {} 
-      if (result.destination.droppableId === "left") { newStatus = {active: true} }
-      if (result.destination.droppableId === "right") { newStatus = {favorite: true}}
-      if (result.destination.droppableId === "bottom") { newStatus = {favorite: false, active: false}}
-      if (result.destination.droppableId === "helm") { newStatus = {topTask: true}}
-      if (result.source.droppableId === "helm") { newStatus = {...newStatus, topTask: false}}
+      if (req.destination.droppableId === "left") { newStatus = {active: true} }
+      if (req.destination.droppableId === "right") { newStatus = {favorite: true}}
+      if (req.destination.droppableId === "bottom") { newStatus = {favorite: false, active: false}}
+      if (req.destination.droppableId === "helm") { newStatus = {topTask: true}}
+      if (req.source.droppableId === "helm") { newStatus = {...newStatus, topTask: false}}
       
     const taskData = {
-      id: result.draggableId,
+      id: req.draggableId,
       ...newStatus
     }
     console.log("taskData", taskData)
     API.updateTask(taskData)
-      .then(res => console.log(res.config.data))
+      .then(res => console.log("res", res))
       .catch(err => console.log(err))
   };
 
@@ -302,7 +302,7 @@ class Dashboard extends Component {
   };
 
   startTimer = () => {
-    if(this.state.helm && !this.state.isTimerStarted) {
+    if(!this.state.isTimerStarted) {
       const startTime = moment();
       const updateTimer = () => {
         const timeDiff = this.calculateTimeDiff(startTime, this.state.stashedTime);
