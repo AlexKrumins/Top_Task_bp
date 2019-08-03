@@ -31,11 +31,28 @@ const reorder = (list, startIndex, endIndex) => {
  * Moves an item from one list to another list.
  */
 const move = (source, destination, droppableSource, droppableDestination) => {
+    console.log("move dest", droppableDestination)  
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
     const [removed] = sourceClone.splice(droppableSource.index, 1);
 
     destClone.splice(droppableDestination.index, 0, removed);
+
+    const result = {};
+    result[droppableSource.droppableId] = sourceClone;
+    result[droppableDestination.droppableId] = destClone;
+    return result;
+};
+
+const swap = (source, destination, droppableSource, droppableDestination) => {
+    console.log("swapped destination", droppableDestination)  
+    const sourceClone = Array.from(source);
+    const destClone = Array.from(destination);
+    const [sRemoved] = sourceClone.splice(droppableSource.index, 1);
+    const [dRemoved] = destClone.splice(0, 1);
+    console.log("droppableDestination.index", droppableDestination.index)
+    destClone.splice(0, 0, sRemoved);
+    sourceClone.splice(droppableSource.index, 0, dRemoved);
 
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
@@ -88,6 +105,7 @@ class Dashboard extends Component {
 
   getList = id => this.state[this.id2List[id]];
 
+  // if the top task is dragged, the timer will stop
   onDragStart = (result) => {
     console.log("onDragStart result", result)
     if (result.source.droppableId === "helm") {
@@ -97,12 +115,13 @@ class Dashboard extends Component {
   onDragEnd = (result) => {
     console.log("onDragEnd result", result)
     const { source, destination, } = result;
-    // dropped outside the list
+    //top task is dragged away with no destination
     if (source.droppableId === "helm" && !destination){
       this.startTimer()
+    } else if (source.droppableId === "helm" && destination.droppableId === "helm"){
+      this.startTimer()
+    // dropped outside the list
     } else if (!destination) {
-      return;
-    } else if (this.state.isTimerStarted && source.droppableId === "helm") {
       return;
     } else if (source.droppableId === destination.droppableId) {
       const tasks = reorder(
@@ -117,13 +136,27 @@ class Dashboard extends Component {
       if (source.droppableId === 'helm') {state = { helm: tasks }}
       this.setState(state);
     } else {
-      const moveResult = move(
+      let moveResult = move(
         this.getList(source.droppableId),
         this.getList(destination.droppableId),
         source,
         destination
       );
-
+      if (destination.droppableId === "helm" && this.state.helm.length > 0) {
+        this.stopTimer()
+        moveResult = swap(
+          this.getList(source.droppableId),
+          this.getList(destination.droppableId),
+          source,
+          destination
+        )
+        this.updateTask({
+          draggableId: this.state.helm[0].id,
+          destination: { droppableId: [result.source]},
+          source: {droppableId: "helm", index: 0}
+        })
+      }
+      console.log("moveResult", moveResult)
       this.updateTask(result);
       if(moveResult.left){this.setState({left: moveResult.left})};
       if(moveResult.right){this.setState({right: moveResult.right})};
@@ -219,7 +252,7 @@ class Dashboard extends Component {
       if (result.destination.droppableId === "right") { newStatus = {favorite: true}}
       if (result.destination.droppableId === "bottom") { newStatus = {favorite: false, active: false}}
       if (result.destination.droppableId === "helm") { newStatus = {topTask: true}}
-      if (result.source.droppableId === "helm") { newStatus = {...newStatus, topTask: false, title: this.state.title, notes:this.state.notes}}
+      if (result.source.droppableId === "helm") { newStatus = {...newStatus, topTask: false}}
       
     const taskData = {
       id: result.draggableId,
@@ -304,7 +337,7 @@ class Dashboard extends Component {
         stashedTime: timeSpent
       }
       API.updateTask(taskData)
-        .then(res => console.log(res))
+        .then(res => console.log("stopTime res",res))
         .catch(err => console.log(err))
     } else {return}
   };
@@ -357,7 +390,7 @@ class Dashboard extends Component {
                 </List>
               </Col>
               <Col size="md-4">
-                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled} >
+                <List droppableId="helm">
                 {(this.state.helm.length > 0)? ([
                   (this.state.helm.map((task, index) => (
                       <ListItem
