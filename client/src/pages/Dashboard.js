@@ -88,11 +88,19 @@ class Dashboard extends Component {
 
   getList = id => this.state[this.id2List[id]];
 
+  onDragStart = (result) => {
+    console.log("onDragStart result", result)
+    if (result.source.droppableId === "helm") {
+      this.stopTimer()
+    }
+  }
   onDragEnd = (result) => {
     console.log("onDragEnd result", result)
     const { source, destination, } = result;
     // dropped outside the list
-    if (!destination) {
+    if (source.droppableId === "helm" && !destination){
+      this.startTimer()
+    } else if (!destination) {
       return;
     } else if (this.state.isTimerStarted && source.droppableId === "helm") {
       return;
@@ -149,6 +157,7 @@ class Dashboard extends Component {
             notes: moveResult.helm[0].title,
             ...loadTime,
           })
+          this.startTimer()
         };
       };
     };
@@ -306,7 +315,7 @@ class Dashboard extends Component {
     const task = this.state.helm[0]
     if (task.favorite) {
       destination = {droppableId: "right"}
-     } else if (task.active) {
+     } else {
       destination = {droppableId: "left"}
      }
     const newResult = {
@@ -322,7 +331,7 @@ class Dashboard extends Component {
       <Container fluid>
       <Nav uuid={this.state.uuid}/>
         <Title>Top Task Dashboard</Title>
-        <DragDropContext onDragEnd={this.onDragEnd}>
+        <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
           <Row>
             <Col size="md-4">
               <h2>Today's Tasks</h2>
@@ -348,11 +357,11 @@ class Dashboard extends Component {
                 </List>
               </Col>
               <Col size="md-4">
-                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled} isDragDisabled={this.state.isTimerStarted}>
+                <List droppableId="helm" isDropDisabled={this.state.helmDropDisabled} >
                 {(this.state.helm.length > 0)? ([
                   (this.state.helm.map((task, index) => (
                       <ListItem
-                      isDragDisabled={this.state.isTimerStarted}
+                      
                       key={task.id}
                       draggableId={task.id}
                       title={task.title}
