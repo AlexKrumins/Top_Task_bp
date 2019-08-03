@@ -302,9 +302,16 @@ class Dashboard extends Component {
 
   fullStop = async () => {
     await this.stopTimer()
+    let destination = {droppableId: "bottom"}
+    const task = this.state.helm[0]
+    if (task.favorite) {
+      destination = {droppableId: "right"}
+     } else if (task.active) {
+      destination = {droppableId: "left"}
+     }
     const newResult = {
-      draggableId: this.state.helm[0].id,
-      destination: {droppableId: "left"},
+      draggableId: task.id,
+      destination,
       source: {droppableId: "helm"},
     }
     this.onDragEnd(newResult)
@@ -330,6 +337,7 @@ class Dashboard extends Component {
                       index={index}
                       completeTask={this.onDragEnd}
                       source = {"left"}
+                      destination={task.favorite ? "right" : "bottom"}
                       time = {task.stashedTime}
                     />
                     ))) : (
@@ -351,6 +359,7 @@ class Dashboard extends Component {
                       index={index}
                       completeTask={this.fullStop}
                       source = {"helm"}
+                      destination={task.favorite ? "right" : "left"}
                       onChange={this.handleInputChange}
                       />
                       // <TextArea
@@ -455,6 +464,7 @@ class Dashboard extends Component {
                       index={index}
                       completeTask={this.onDragEnd}
                       source = {"right"}
+                      destination={"bottom"}
                       time = {task.stashedTime}
                     />
                     ))) : (

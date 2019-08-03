@@ -39,8 +39,8 @@ function ListItem(props) {
           <SuccessBtn onClick={() => {
             props.completeTask({
               draggableId: props.draggableId,
-              source: {droppableId: props.source},
-              destination: {droppableId: "bottom"},
+              source: {droppableId: props.source, index: props.index},
+              destination: {droppableId: props.destination},
             })
           }}/>  
           <strong className="card-subtitle">
