@@ -1,18 +1,13 @@
-{
-  "name": "TBD",
-  "version": "1.0.0",
-  "description": "TBD",
-  "author": "TBD",
-  "license": "MIT",
-  "main": "server.js",
-  "engines": {
-    "node": "12.x"
+{  "repository": {
+  "type": "git",
+  "url": "git+https://github.com/AlexKrumins/Top_Task.git"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TBD"
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexKrumins/Top_Task/issues"
   },
-  "homepage": "TBD",
+  "homepage": "https://github.com/AlexKrumins/Top_Task#readme",
   "scripts": {
     "start": "if-env NODE_ENV=production && yarn start:prod || yarn start:dev",
     "start:prod": "node server.js",
