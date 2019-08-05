@@ -35,11 +35,13 @@ function HListItem(props) {
               snapshot.isDragging,
               provided.draggableProps.style
           )}>
+          <DeleteBtn onClick={() => props.deleteTask(props.draggableId)} />  
           <strong>
             {props.title}
-            {(props.source !== "helm") ? displayTime: (null)}
           </strong>
-          <DeleteBtn onClick={() => props.deleteTask(props.draggableId)} />  
+          <p>
+            {(props.source !== "helm") ? displayTime: (null)}
+          </p>
         </div>
       )}
     </Draggable>
