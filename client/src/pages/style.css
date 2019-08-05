@@ -1,0 +1,12 @@
+#main-container {
+  padding-top: 50px;
+  background: #ECEFF1;
+  width: 100% !important;
+  display: flex;
+  flex-flow: row wrap;
+  padding: 20px;
+  justify-content: space-around;
+  align-content: flex-start;
+  overflow: auto;
+  font: yellow;
+}

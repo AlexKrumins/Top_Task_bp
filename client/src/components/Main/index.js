@@ -7,11 +7,12 @@ const grid = 8;
 const getListStyle = isDraggingOver => ({
     background: isDraggingOver ? 'lightblue' : 'lightgrey',
     padding: grid,
+    border: 2
 });
 
 function List(props) {
   return(
-    <Droppable droppableId={props.droppableId} isDropDisabled={props.isDropDisabled}>
+    <Droppable  droppableId={props.droppableId} isDropDisabled={props.isDropDisabled} >
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}

@@ -31,11 +31,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     notes: {
       type: DataTypes.STRING,
-      default: null,
+      default: "",
     },
     stashedTime: {
       type: DataTypes.JSON,
-      default: null,
+      default: 0,
     },
     taskCreated: {
       type: DataTypes.DATE, 

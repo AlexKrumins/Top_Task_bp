@@ -9,15 +9,15 @@ module.exports = {
       .then(dbModel => res.json(dbModel))
       .catch(err => res.redirect("/login"));
   },
-  // findById: function(req, res) {
-  //   if(!req.user) {return res.redirect("/login")}
-  //   else{
-  //     db.Task
-  //       .findAll(req.params.user_uuid)
-  //       .then(dbModel => res.json(dbModel))
-  //       .catch(err => res.status(422).json(err));
-  //     }
-  //   },
+  findOne: function(req, res) {
+    console.log("req.params.id", req.params.id)
+
+    db.Task
+      .findOne({where: {id: req.params.id}})
+      .then(dbModel => res.json(dbModel))
+      .catch(err => res.status(422).json(err));
+  },
+    
   create: function(req, res) {
     console.log("taskController create req.body = ", req.body.title)
     db.Task

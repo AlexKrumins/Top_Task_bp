@@ -1,7 +1,7 @@
 import React from 'react';
 import moment from "moment";
 
-import { SuccessBtn } from "../Form";
+import { SuccessBtn, InfoBtn} from "../Form";
 import { Draggable } from 'react-beautiful-dnd';
 
 const grid = 8;
@@ -39,11 +39,14 @@ function ListItem(props) {
           <SuccessBtn onClick={() => {
             props.completeTask({
               draggableId: props.draggableId,
-              source: {droppableId: props.source},
-              destination: {droppableId: "bottom"},
+              source: {droppableId: props.source, index: props.index},
+              destination: {droppableId: props.destination},
             })
           }}/>  
-          <strong class="card-subtitle">
+          <InfoBtn onClick={() => {
+            props.getTaskInfo(props.draggableId)
+          }}/>  
+          <strong className="card-subtitle">
             {props.title}
           </strong>
           <p>
