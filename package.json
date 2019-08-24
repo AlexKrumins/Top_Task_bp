@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "TBD",
   "version": "1.0.0",
   "description": "TBD",
@@ -8,11 +7,6 @@
   "main": "server.js",
   "engines": {
     "node": "12.x"
-=======
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/AlexKrumins/Top_Task.git"
->>>>>>> e92dc64533d7a12364f29604c02f23fa7ab4f8fb
   },
   "repository": {
     "type": "git",
