@@ -1,6 +1,7 @@
-{  "repository": {
-  "type": "git",
-  "url": "git+https://github.com/AlexKrumins/Top_Task.git"
+{
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexKrumins/Top_Task.git"
   },
   "author": "",
   "license": "ISC",

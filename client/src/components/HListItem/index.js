@@ -33,23 +33,12 @@ function HListItem(props) {
           style={getHItemStyle(
               snapshot.isDragging,
               provided.draggableProps.style
-<<<<<<< HEAD
-          )}>
-          <DeleteBtn onClick={() => props.deleteTask(props.draggableId)} />  
-          <strong>
-            {props.title}
-          </strong>
-          <p>
-            {(props.source !== "helm") ? displayTime: (null)}
-          </p>
-=======
               )}>
               <DeleteBtn onClick={() => props.deleteTask(props.draggableId)} />  
           <h6 class="card-title">
             {props.title}
           </h6>
             {(props.source !== "helm") ? displayTime: (null)}
->>>>>>> 85ec121991fe8fd0c06d18b171d79fba90e6c683
         </div>
       )}
     </Draggable>
