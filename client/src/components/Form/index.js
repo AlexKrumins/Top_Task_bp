@@ -41,7 +41,7 @@ export function FormBtn(props) {
 
 export function SmallButton(props) {
   return (
-    <button className="btn btn-success justify-content-center" {...props} style={{ float: "right", marginBottom: 10 }} >
+    <button className="btn btn-success justify-content-center" {...props} style={{ float: "right", marginBottom: 10, marginRight: 10 }} >
       {props.children}
     </button>
   );

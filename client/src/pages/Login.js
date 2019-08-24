@@ -34,6 +34,11 @@ class Login extends Component {
     }
   };
 
+  handleRedirect = event => {
+    event.preventDefault();
+    window.location.replace("/signup")
+  }
+
   render() {
     return (
       <Container fluid>
@@ -58,6 +63,11 @@ class Login extends Component {
                 onClick={this.handleFormSubmit}
                 >
                 Log In
+              </SmallButton>
+              <SmallButton 
+                onClick={this.handleRedirect}
+                >
+                Create Account
               </SmallButton>
             </form>
           </Col>
