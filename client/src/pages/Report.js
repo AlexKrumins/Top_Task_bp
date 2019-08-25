@@ -3,29 +3,44 @@ import Nav from "../components/Nav";
 import {Container } from "../components/Grid";
 import Share from "../components/share.png"
 import API from "../utils/API";
+import ListItem from "components/ListItem";
 
 class Report extends Component {
   state = {
     task: {},
-    id: this.props.match.params.id
+    taskList: [],
+    id: this.props.match.params.id,
+    uuid: this.props.match.params.uuid,
   };
-  // When this component mounts, grab the book with the _id of this.props.match.params.id
-  // e.g. localhost:3000/books/599dcb67f0f16317844583fc
+
   componentDidMount = () => {
     console.log(this.state)
     this.loadTask();
   }
   
   loadTask = () => {
-    console.log(this.state)
-    API.getTaskInfo(this.state.id)
-    .then(res => {
-      const task = res.data
-      this.setState({task})
-    })
-    console.log(this.state)
+    if (this.state.id) {
+      API.getTaskInfo(this.state.id)
+      .then(res => {
+        const task = res.data
+        this.setState({task})
+      })
+    } else {
+      API.getTasks(this.state.uuid)
+      .then(res => {
+        console.log(res.data)
+        const taskList = res.data
+        this.setState({taskList})
+      })
+    }
+  }
 
-    //   .catch(err => console.log(err));
+  getTaskInfo = id => {
+    API.getTaskInfo(id)
+      .then(res => {
+        console.log(res.data)
+        window.location.replace("/report/" + [this.state.uuid] + "/" + [res.data.id])
+      })
   }
 
   render() {
@@ -33,30 +48,36 @@ class Report extends Component {
       <Container fluid>
         
       <Nav uuid={this.state.uuid}/>
-      <div className="col-2">
-
-        <h1>
-          Report
-        </h1>
-        <h5>
-          {this.state.task.id}
-        </h5>
-        <h2>
-          {this.state.task.title}
-        </h2>
-        <p>
-          {this.state.task.createdAt}
-        </p>
+      {this.state.id ? (
+        <div className="col-2">
+          <h1>
+            Report
+          </h1>
+          <h5>
+            {this.state.task.id}
+          </h5>
+          <h2>
+            {this.state.task.title}
+          </h2>
           <p>
-          {this.state.task.updatedAt}
-
+            {this.state.task.createdAt}
           </p>
           <p>
-          {this.state.task.stashedTime}
-
+            {this.state.task.updatedAt}
           </p>
-      </div>
-      <div className="col-10">
+          <p>
+            {this.state.task.stashedTime}
+          </p>
+        </div>
+      ) : (
+        this.state.taskList.map((task, index) => (
+        <div>
+          {task.id}
+        </div>
+        ))
+      )}
+
+<div className="col-10">
 
         <img src={Share}></img>
       </div>
