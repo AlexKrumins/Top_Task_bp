@@ -4,6 +4,9 @@ import {Container } from "../components/Grid";
 import Share from "../components/share.png"
 import API from "../utils/API";
 import ListItem from "components/ListItem";
+import moment from "moment";
+
+// const displayTime = (moment.utc(moment.duration(task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))
 
 class Report extends Component {
   state = {
@@ -36,6 +39,7 @@ class Report extends Component {
   }
 
   getTaskInfo = id => {
+    console.log("id", id)
     API.getTaskInfo(id)
       .then(res => {
         console.log(res.data)
@@ -49,30 +53,29 @@ class Report extends Component {
         
       <Nav uuid={this.state.uuid}/>
       {this.state.id ? (
-        <div className="col-2">
-          <h1>
-            Report
-          </h1>
-          <h5>
-            {this.state.task.id}
-          </h5>
-          <h2>
-            {this.state.task.title}
-          </h2>
-          <p>
-            {this.state.task.createdAt}
-          </p>
-          <p>
-            {this.state.task.updatedAt}
-          </p>
-          <p>
-            {this.state.task.stashedTime}
-          </p>
+        <div>
+          <h2>{this.state.task.title}</h2>
+          <p><strong>Task Created</strong> {moment(this.state.task.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
+          <p><strong>Task Last Updated</strong> {moment(this.state.task.updatedAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
+          <p><strong>Time Spent</strong> {(moment.utc(moment.duration(this.state.task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>
+          <p>{this.state.task.notes}</p>
+          <button onClick={() => {window.location.replace("/report/" + this.state.uuid)}}>Return to Task List</button>
         </div>
       ) : (
         this.state.taskList.map((task, index) => (
-        <div>
-          {task.id}
+          
+        <div 
+          className="alert alert-secondary" 
+          role="alert"
+          key={task.id}
+          id={task.id}
+          onClick={() => {
+            this.getTaskInfo(task.id)
+          }}
+        >
+          <h4>{task.title}</h4>
+          <p>Task Created: {moment(task.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
+          <p>Time Spent: {(moment.utc(moment.duration(task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>
         </div>
         ))
       )}
