@@ -376,6 +376,7 @@ class devDashboard extends Component {
                     title={task.title}
                     index={index}
                     deleteTask={this.deleteTask}
+                    notes={task.notes}
                   />
                   ))) : (
                   <div>

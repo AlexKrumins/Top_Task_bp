@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import Nav from "../components/Nav";
-import {Container } from "../components/Grid";
+import {Container, Row, Col} from "../components/Grid";
 import Share from "../components/share.png"
 import API from "../utils/API";
 import ListItem from "components/ListItem";
 import moment from "moment";
+import { SmallButton } from "components/Form";
 
 // const displayTime = (moment.utc(moment.duration(task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))
 
@@ -52,6 +53,22 @@ class Report extends Component {
       <Container fluid>
         
       <Nav uuid={this.state.uuid}/>
+      <Row>
+        <Col size="4">
+          </Col>
+
+      <SmallButton 
+        onClick={() => {window.location.replace("/dashboard/" + this.state.uuid)}}
+        >
+        Return to Dashboard
+      </SmallButton>
+      <SmallButton 
+        onClick={() => {window.location.replace("/report/" + this.state.uuid)}}
+        >
+        Return to Task List
+      </SmallButton>
+      </Row>
+        
       {this.state.id ? (
         <div>
           <h2>{this.state.task.title}</h2>
@@ -59,9 +76,9 @@ class Report extends Component {
           <p><strong>Task Last Updated</strong> {moment(this.state.task.updatedAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
           <p><strong>Time Spent</strong> {(moment.utc(moment.duration(this.state.task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>
           <p>{this.state.task.notes}</p>
-          <button onClick={() => {window.location.replace("/report/" + this.state.uuid)}}>Return to Task List</button>
         </div>
       ) : (
+        
         this.state.taskList.map((task, index) => (
           
         <div 
@@ -73,6 +90,7 @@ class Report extends Component {
             this.getTaskInfo(task.id)
           }}
         >
+          
           <h4>{task.title}</h4>
           <p>Task Created: {moment(task.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
           <p>Time Spent: {(moment.utc(moment.duration(task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>

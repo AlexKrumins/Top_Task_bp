@@ -246,7 +246,7 @@ class Dashboard extends Component {
     API.getTaskInfo(id)
       .then(res => {
         console.log(res.data)
-        window.location.replace("/report/" +[this.state.uuid]+ "/" + [res.data.id])
+        window.location.replace("/report/" + [this.state.uuid] + "/" + [res.data.id])
       })
   }
   deleteTask = id => {
@@ -409,6 +409,7 @@ class Dashboard extends Component {
                       key={task.id}
                       draggableId={task.id}
                       title={task.title}
+                      notes={task.notes}
                       index={index}
                       completeTask={this.fullStop}
                       getTaskInfo={this.getTaskInfo}
