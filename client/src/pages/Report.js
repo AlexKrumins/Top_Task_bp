@@ -16,6 +16,7 @@ class Report extends Component {
     taskList: [],
     id: this.props.match.params.id,
     uuid: this.props.match.params.uuid,
+    chartData: [],
   };
 
   componentDidMount = () => {
@@ -35,7 +36,11 @@ class Report extends Component {
       .then(res => {
         console.log(res.data)
         const taskList = res.data
-        this.setState({taskList})
+        let chartData = []
+        for (let i=0; i < res.data.length; i++) {
+          chartData.push({title: res.data[i].title, value: moment.utc(moment.duration(res.data[i].stashedTime, "ms").asMilliseconds()), color: '#'+Math.random().toString(16).substr(-6)})
+        }
+        this.setState({taskList, chartData})
       })
     }
   }
@@ -67,12 +72,7 @@ class Report extends Component {
           </SmallButton>
         </Row>
           <PieChart
-            data={[
-              {title: "one", value: 10, color: '#E38627' },
-              this.state.taskList.map((task, index) => (
-                {title: task.title, value: task.stashedTime,  color: '#E38627' }
-              ))
-            ]}
+            data={this.state.chartData}
           />
         {this.state.id ? (
           <div>
