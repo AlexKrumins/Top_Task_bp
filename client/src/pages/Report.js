@@ -1,10 +1,11 @@
-import React, { Component } from "react";
+import React, { Component, Suspense } from "react";
 import Nav from "../components/Nav";
 import {Container, Row, Col} from "../components/Grid";
 import Share from "../components/share.png"
 import API from "../utils/API";
 import ListItem from "components/ListItem";
 import PieChart from "react-minimal-pie-chart"
+import ReactMinimalPieChart from "react-minimal-pie-chart"
 import moment from "moment";
 import { SmallButton } from "components/Form";
 
@@ -20,8 +21,8 @@ class Report extends Component {
   };
 
   componentDidMount = () => {
-    console.log(this.state)
     this.loadTask();
+    console.log(this.state)
   }
   
   loadTask = () => {
@@ -38,7 +39,7 @@ class Report extends Component {
         const taskList = res.data
         let chartData = []
         for (let i=0; i < res.data.length; i++) {
-          chartData.push({title: res.data[i].title, value: moment.utc(moment.duration(res.data[i].stashedTime, "ms").asMilliseconds()), color: '#'+Math.random().toString(16).substr(-6)})
+          chartData.push({title: res.data[i].title, value: moment.duration(res.data[i].stashedTime, "ms").asMilliseconds(), color: '#'+Math.random().toString(16).substr(-6), id: res.data[i].id})
         }
         this.setState({taskList, chartData})
       })
@@ -71,9 +72,24 @@ class Report extends Component {
             Return to Task List
           </SmallButton>
         </Row>
-          <PieChart
-            data={this.state.chartData}
-          />
+        <Row>
+          <Col size="3"></Col>
+          <Col size="6">
+            <ReactMinimalPieChart
+              data={this.state.chartData}
+              style={{width: "60%"}}
+              label={({ data, dataIndex }) => Math.round(data[dataIndex].percentage) + '%'}
+              labelPosition={80}
+              labelStyle={{
+                fontSize: '5px',
+                fontFamily: 'sans-serif',
+                fill: '#121212'
+              }}
+              animate={this.state.chartData > 0}
+              
+              />
+          </Col>
+        </Row>
         {this.state.id ? (
           <div>
             <h2>{this.state.task.title}</h2>
