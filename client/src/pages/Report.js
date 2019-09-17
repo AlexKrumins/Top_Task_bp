@@ -18,6 +18,7 @@ class Report extends Component {
     id: this.props.match.params.id,
     uuid: this.props.match.params.uuid,
     chartData: [],
+    clickData: 0,
   };
 
   componentDidMount = () => {
@@ -39,7 +40,9 @@ class Report extends Component {
         const taskList = res.data
         let chartData = []
         for (let i=0; i < res.data.length; i++) {
-          chartData.push({title: res.data[i].title, value: moment.duration(res.data[i].stashedTime, "ms").asMilliseconds(), color: '#'+Math.random().toString(16).substr(-6), id: res.data[i].id})
+          if(res.data[i].favorite || res.data[i].active || res.data[i].topTask){
+            chartData.push({title: res.data[i].title, value: moment.duration(res.data[i].stashedTime, "ms").asMilliseconds(), color: '#'+Math.random().toString(16).substr(-6), key: res.data[i].id})
+          }
         }
         this.setState({taskList, chartData})
       })
@@ -55,6 +58,11 @@ class Report extends Component {
       })
   }
 
+  onClick(event, chartData, index) {
+    // action('CLICK')(event, chartData, index);
+    console.log('CLICK', { event, chartData, index });
+
+  }
   render() {
     return (
       <Container fluid>
@@ -78,15 +86,19 @@ class Report extends Component {
             <ReactMinimalPieChart
               data={this.state.chartData}
               style={{width: "60%"}}
-              label={({ data, dataIndex }) => Math.round(data[dataIndex].percentage) + '%'}
+              label={({ data, dataIndex }) => Math.round(data[dataIndex].percentage) + '%' }
+              // label={({ data, dataIndex }) => Math.round(data[dataIndex].percentage) + '% \n' + data[dataIndex].title.replace(/ .*/, '')}
               labelPosition={80}
               labelStyle={{
                 fontSize: '5px',
                 fontFamily: 'sans-serif',
                 fill: '#121212'
               }}
-              animate={this.state.chartData > 0}
+              animate
               
+              onClick={(event, chartData, index) => {
+                this.getTaskInfo(chartData[index].key)
+              }}
               />
           </Col>
         </Row>
