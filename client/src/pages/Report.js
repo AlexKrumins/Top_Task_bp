@@ -70,7 +70,7 @@ class Report extends Component {
             Return to Dashboard
           </SmallButton>
           <SmallButton 
-            onClick={() => {this.setState({taskSpotlight : null})}}
+            onClick={() => {this.setState({taskSpotlight : {}})}}
             >
             Return to Task List
           </SmallButton>
@@ -99,7 +99,7 @@ class Report extends Component {
             : null}
           </Col>
         </Row>
-        {this.state.taskSpotlight ? (
+        {this.state.taskSpotlight.id ? (
           <div>
             <h2>{this.state.taskSpotlight.title}</h2>
             <p><strong>Task Created</strong> {moment(this.state.taskSpotlight.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
