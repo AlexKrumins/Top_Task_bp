@@ -28,25 +28,24 @@ class Report extends Component {
   
   loadTask = () => {
     if (this.state.id) {
-      this.getTaskInfo(this.state.id)
+      API.getTaskInfo(this.state.id)
       .then(res => {
         const taskSpotlight = res.data
         this.setState({taskSpotlight})
       })
-    } else {
-      API.getTasks(this.state.uuid)
-      .then(res => {
-        console.log(res.data)
-        const taskList = res.data
-        let chartData = []
-        for (let i=0; i < res.data.length; i++) {
-          if(res.data[i].favorite || res.data[i].active || res.data[i].topTask){
-            chartData.push({title: res.data[i].title, value: moment.duration(res.data[i].stashedTime, "ms").asMilliseconds(), color: '#'+Math.random().toString(16).substr(-6), key: res.data[i].id})
-          }
+    } 
+    API.getTasks(this.state.uuid)
+    .then(res => {
+      console.log(res.data)
+      const taskList = res.data
+      let chartData = []
+      for (let i=0; i < res.data.length; i++) {
+        if(res.data[i].favorite || res.data[i].active || res.data[i].topTask){
+          chartData.push({title: res.data[i].title, value: moment.duration(res.data[i].stashedTime, "ms").asMilliseconds(), color: '#'+Math.random().toString(16).substr(-6), key: res.data[i].id})
         }
-        this.setState({taskList, chartData})
-      })
-    }
+      }
+      this.setState({taskList, chartData})
+    })
   }
 
   getTaskInfo = id => {
@@ -79,7 +78,8 @@ class Report extends Component {
         <Row>
           <Col size="3"></Col>
           <Col size="6">
-            <ReactMinimalPieChart
+            {this.state.chartData ? 
+              <ReactMinimalPieChart
               data={this.state.chartData}
               style={{width: "60%"}}
               label={({ data, dataIndex }) => Math.round(data[dataIndex].percentage) + '%' }
@@ -96,6 +96,7 @@ class Report extends Component {
                 this.getTaskInfo(chartData[index].key)
               }}
               />
+            : null}
           </Col>
         </Row>
         {this.state.taskSpotlight ? (
@@ -110,7 +111,7 @@ class Report extends Component {
 
         {this.state.taskList.map((task, index) => (
           <div 
-            className="alert alert-secondary" 
+            className={(task.id === this.state.taskSpotlight.id) ? "alert alert-primary" : "alert alert-secondary"}
             role="alert"
             key={task.id}
             id={task.id}
