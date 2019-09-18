@@ -13,7 +13,7 @@ import { SmallButton } from "components/Form";
 
 class Report extends Component {
   state = {
-    task: {},
+    taskSpotlight: {},
     taskList: [],
     id: this.props.match.params.id,
     uuid: this.props.match.params.uuid,
@@ -28,10 +28,10 @@ class Report extends Component {
   
   loadTask = () => {
     if (this.state.id) {
-      API.getTaskInfo(this.state.id)
+      this.getTaskInfo(this.state.id)
       .then(res => {
-        const task = res.data
-        this.setState({task})
+        const taskSpotlight = res.data
+        this.setState({taskSpotlight})
       })
     } else {
       API.getTasks(this.state.uuid)
@@ -54,15 +54,11 @@ class Report extends Component {
     API.getTaskInfo(id)
       .then(res => {
         console.log(res.data)
-        window.location.replace("/report/" + [this.state.uuid] + "/" + [res.data.id])
+        this.setState({taskSpotlight : res.data})
       })
   }
 
-  onClick(event, chartData, index) {
-    // action('CLICK')(event, chartData, index);
-    console.log('CLICK', { event, chartData, index });
-
-  }
+  
   render() {
     return (
       <Container fluid>
@@ -75,7 +71,7 @@ class Report extends Component {
             Return to Dashboard
           </SmallButton>
           <SmallButton 
-            onClick={() => {window.location.replace("/report/" + this.state.uuid)}}
+            onClick={() => {this.setState({taskSpotlight : null})}}
             >
             Return to Task List
           </SmallButton>
@@ -102,16 +98,17 @@ class Report extends Component {
               />
           </Col>
         </Row>
-        {this.state.id ? (
+        {this.state.taskSpotlight ? (
           <div>
-            <h2>{this.state.task.title}</h2>
-            <p><strong>Task Created</strong> {moment(this.state.task.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
-            <p><strong>Task Last Updated</strong> {moment(this.state.task.updatedAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
-            <p><strong>Time Spent</strong> {(moment.utc(moment.duration(this.state.task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>
-            <p>{this.state.task.notes}</p>
+            <h2>{this.state.taskSpotlight.title}</h2>
+            <p><strong>Task Created</strong> {moment(this.state.taskSpotlight.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
+            <p><strong>Task Last Updated</strong> {moment(this.state.taskSpotlight.updatedAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
+            <p><strong>Time Spent</strong> {(moment.utc(moment.duration(this.state.taskSpotlight.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>
+            <p>{this.state.taskSpotlight.notes}</p>
           </div>
-        ) : (
-          this.state.taskList.map((task, index) => (
+        ) : null}
+
+        {this.state.taskList.map((task, index) => (
           <div 
             className="alert alert-secondary" 
             role="alert"
@@ -126,7 +123,7 @@ class Report extends Component {
             <p>Time Spent: {(moment.utc(moment.duration(task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>
           </div>
           ))
-        )}
+        }
       </Container>
     )
   }
