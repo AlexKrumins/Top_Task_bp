@@ -78,7 +78,7 @@ class Report extends Component {
         <Row>
           <Col size="3"></Col>
           <Col size="6">
-            {this.state.chartData ? 
+            {this.state.chartData.length > 0 ? 
               <ReactMinimalPieChart
               data={this.state.chartData}
               style={{width: "60%"}}
@@ -90,7 +90,8 @@ class Report extends Component {
                 fontFamily: 'sans-serif',
                 fill: '#121212'
               }}
-              animate
+              animate={true}
+              animationDuration={2000}
               
               onClick={(event, chartData, index) => {
                 this.getTaskInfo(chartData[index].key)
