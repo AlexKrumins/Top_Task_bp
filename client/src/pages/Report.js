@@ -64,7 +64,7 @@ class Report extends Component {
         <Nav uuid={this.state.uuid}/>
         <Row>
           <Col size="4"></Col>
-          <SmallButton 
+          {/* <SmallButton 
             onClick={() => {window.location.replace("/dashboard/" + this.state.uuid)}}
             >
             Return to Dashboard
@@ -73,7 +73,7 @@ class Report extends Component {
             onClick={() => {this.setState({taskSpotlight : {}})}}
             >
             Return to Task List
-          </SmallButton>
+          </SmallButton> */}
         </Row>
         <Row>
           <Col size="3"></Col>
