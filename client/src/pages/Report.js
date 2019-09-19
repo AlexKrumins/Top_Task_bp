@@ -10,6 +10,8 @@ import moment from "moment";
 import { SmallButton } from "components/Form";
 
 // const displayTime = (moment.utc(moment.duration(task.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))
+const FULL_WIDTH = 50
+const NORMAL_WIDTH = 40
 
 class Report extends Component {
   state = {
@@ -41,7 +43,7 @@ class Report extends Component {
       let chartData = []
       for (let i=0; i < res.data.length; i++) {
         if(res.data[i].favorite || res.data[i].active || res.data[i].topTask){
-          chartData.push({title: res.data[i].title, value: moment.duration(res.data[i].stashedTime, "ms").asMilliseconds(), color: '#'+Math.random().toString(16).substr(-6), key: res.data[i].id})
+          chartData.push({title: res.data[i].title, value: moment.duration(res.data[i].stashedTime, "ms").asMilliseconds(), color: '#'+Math.random().toString(16).substr(-6), key: res.data[i].id, style: {strokeWidth: NORMAL_WIDTH}})
         }
       }
       this.setState({taskList, chartData})
@@ -81,10 +83,10 @@ class Report extends Component {
             {this.state.chartData.length > 0 ? 
               <ReactMinimalPieChart
               data={this.state.chartData}
-              style={{width: "60%"}}
+              // style={{width: "60%"}}
               label={({ data, dataIndex }) => Math.round(data[dataIndex].percentage) + '%' }
               // label={({ data, dataIndex }) => Math.round(data[dataIndex].percentage) + '% \n' + data[dataIndex].title.replace(/ .*/, '')}
-              labelPosition={80}
+              labelPosition={70}
               labelStyle={{
                 fontSize: '5px',
                 fontFamily: 'sans-serif',
@@ -95,6 +97,21 @@ class Report extends Component {
               
               onClick={(event, chartData, index) => {
                 this.getTaskInfo(chartData[index].key)
+                const data = chartData.map((entry, i) => {
+                  return {
+                    ...entry,
+                    ...{
+                      style: {
+                        ...entry.style,
+                        strokeWidth: i === index ? FULL_WIDTH : NORMAL_WIDTH,
+                      },
+                    },
+                  };
+                });
+
+                this.setState({
+                  chartData: data,
+                });
               }}
               />
             : null}
