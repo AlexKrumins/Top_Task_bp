@@ -29,23 +29,22 @@ const reorder = (list, startIndex, endIndex) => {
     return result;
 };
 
-/**
- * Moves an item from one list to another list.
- */
+//  Moves an item from one list to another list (i.e. left/right/helm/bottom).
 const move = (source, destination, droppableSource, droppableDestination) => {
-    console.log("move dest", droppableDestination)  
-    const sourceClone = Array.from(source);
-    const destClone = Array.from(destination);
-    const [removed] = sourceClone.splice(droppableSource.index, 1);
-
-    destClone.splice(droppableDestination.index, 0, removed);
-
-    const result = {};
-    result[droppableSource.droppableId] = sourceClone;
-    result[droppableDestination.droppableId] = destClone;
-    return result;
+  console.log("move dest", droppableDestination)  
+  const sourceClone = Array.from(source);
+  const destClone = Array.from(destination);
+  const [removed] = sourceClone.splice(droppableSource.index, 1);
+  
+  destClone.splice(droppableDestination.index, 0, removed);
+  
+  const result = {};
+  result[droppableSource.droppableId] = sourceClone;
+  result[droppableDestination.droppableId] = destClone;
+  return result;
 };
 
+//  Moves an item from any list to another position within the SAME list.
 const swap = (source, destination, droppableSource, droppableDestination) => {
     console.log("swapped destination", droppableDestination)  
     const sourceClone = Array.from(source);
@@ -55,7 +54,6 @@ const swap = (source, destination, droppableSource, droppableDestination) => {
     console.log("droppableDestination.index", droppableDestination.index)
     destClone.splice(0, 0, sRemoved);
     sourceClone.splice(droppableSource.index, 0, dRemoved);
-
     const result = {};
     result[droppableSource.droppableId] = sourceClone;
     result[droppableDestination.droppableId] = destClone;
@@ -65,18 +63,19 @@ const swap = (source, destination, droppableSource, droppableDestination) => {
 
 class Dashboard extends Component {
   state = {
+    // the different tasks in the user's profile will be sorted into these lists, named after their postion within the DOM.
     left: [],
     right: [],
     bottom: [],
     helm: [],
-
+    // These store information for any tasks being created.
     title: "",
     notes: "",
     uuid: this.props.match.params.uuid,
     isfavorite: false,
     isActive: false,
     helmDropDisabled: false,
-
+    // These control the data of the timer.
     startTime: null,
     hours: 0,
     minutes: 0,
@@ -87,7 +86,8 @@ class Dashboard extends Component {
     intervalTimer: null
   };
 
-  
+  // When 
+  getList = id => this.state[this.id2List[id]];
 
   id2List = {
     left: 'left',
@@ -105,7 +105,6 @@ class Dashboard extends Component {
   }
 
 
-  getList = id => this.state[this.id2List[id]];
 
   // if the top task is dragged, the timer will stop
   onDragStart = (result) => {
