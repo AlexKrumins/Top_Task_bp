@@ -11,7 +11,7 @@ function Nav(props) {
         Dashboard
       </a>
       <span className="navbar-brand">||</span>
-      <a className="navbar-brand" href={(props.uuid) ? ("/report/" + 28) : ("/login")}>
+      <a className="navbar-brand" href={(props.uuid) ? ("/report/" + props.uuid) : ("/login")}>
         Review Tasks
       </a>
       <span className="navbar-brand">||</span>

@@ -3,6 +3,7 @@ import moment from "moment";
 
 import { SuccessBtn, InfoBtn} from "../Form";
 import { Draggable } from 'react-beautiful-dnd';
+import { FaTasks } from 'react-icons/fa';
 
 const grid = 8;
 
@@ -50,7 +51,7 @@ function ListItem(props) {
             {props.title}
           </strong>
           <p>
-            {(props.source !== "helm") ? displayTime : null}
+            {(props.source !== "helm") ? displayTime : props.notes}
           </p>
         </div>
       )}

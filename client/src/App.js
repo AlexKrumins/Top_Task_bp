@@ -20,7 +20,7 @@ function App() {
             <Route exact path="/dashboard/:uuid" component={Dashboard}/>              
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/report/undefined" component={Login} />
-            <Route exact path="/report/:id" component={Report} />
+            <Route exact path="/report/:uuid/:id?" component={Report} />
             <Route component={NoMatch} />
           </Switch>
         </Wrapper>
