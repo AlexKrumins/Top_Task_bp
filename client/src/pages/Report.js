@@ -1,5 +1,6 @@
 import React, { Component, Suspense } from "react";
 import Nav from "../components/Nav";
+import { SuccessBtn, InfoBtn} from "../components/Form";
 import {Container, Row, Col} from "../components/Grid";
 import Share from "../components/share.png"
 import API from "../utils/API";
@@ -102,7 +103,12 @@ class Report extends Component {
           <Col size="4">
             {this.state.taskSpotlight.id ? (
               <div>
-                <h2>{this.state.taskSpotlight.title}</h2>
+                <h2>
+                  {this.state.taskSpotlight.title}
+                  <InfoBtn onClick={() => {
+                    console.log("info button clicked")
+                  }}/> 
+                </h2>
                 <p><strong>Task Created</strong> {moment(this.state.taskSpotlight.createdAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
                 <p><strong>Task Last Updated</strong> {moment(this.state.taskSpotlight.updatedAt).format('MMMM Do YYYY, h:mm:ss a')} </p>
                 <p><strong>Time Spent</strong> {(moment.utc(moment.duration(this.state.taskSpotlight.stashedTime, "ms").asMilliseconds()).format("H:mm:ss"))}</p>
