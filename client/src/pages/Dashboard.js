@@ -86,7 +86,7 @@ class Dashboard extends Component {
     intervalTimer: null
   };
 
-  // When 
+  // When the tasks are loaded, they are ascribed their list id's
   getList = id => this.state[this.id2List[id]];
 
   id2List = {
@@ -116,20 +116,22 @@ class Dashboard extends Component {
   onDragEnd = async (result) => {
     console.log("onDragEnd result", result)
     const { source, destination, } = result;
-    //top task is dragged away with no destination
+    //if the top task is dragged away from helm with no destination, it will return to the helm and timer will resume
     if (source.droppableId === "helm" && !destination){
       this.startTimer()
     } else if (source.droppableId === "helm" && destination.droppableId === "helm"){
       this.startTimer()
-    // dropped outside the list
+    // if a task is dragged away from another list with no destination, it will return to its current list
     } else if (!destination) {
       return;
+    // if a task is moved to a different spot in the list order, the list will be updated with the new order
     } else if (source.droppableId === destination.droppableId) {
       const tasks = reorder(
         this.getList(source.droppableId),
         source.index,
         destination.index
       );
+      //the state will then be updated with the new order of tasks
       let state = { tasks };
       if (source.droppableId === 'left') {state = { left: tasks }};
       if (source.droppableId === 'right') {state = { right: tasks }};
@@ -137,12 +139,14 @@ class Dashboard extends Component {
       if (source.droppableId === 'helm') {state = { helm: tasks }}
       this.setState(state);
     } else {
+      //if the task being dragged is moved to an entirely new list, the origin and destination will be cloned & updated with the task removed/added
       let moveResult = move(
         this.getList(source.droppableId),
         this.getList(destination.droppableId),
         source,
         destination
       );
+      //if the task being dragged is moved to the helm but it is currently occupied by a Top-task, the timer will stop and the two tasks will swap places
       if (destination.droppableId === "helm" && this.state.helm.length > 0) {
         await this.stopTimer()
         moveResult = swap(
@@ -158,6 +162,7 @@ class Dashboard extends Component {
         })
       }
       console.log("moveResult", moveResult)
+      //the data specific to the task will then be updated to reflect its current list, and the API will be updated
       this.updateTask(result);
       if(moveResult.left){this.setState({left: moveResult.left})};
       if(moveResult.right){this.setState({right: moveResult.right})};
