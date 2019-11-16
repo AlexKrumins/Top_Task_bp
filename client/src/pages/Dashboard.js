@@ -167,6 +167,7 @@ class Dashboard extends Component {
       if(moveResult.left){this.setState({left: moveResult.left})};
       if(moveResult.right){this.setState({right: moveResult.right})};
       if(moveResult.bottom){this.setState({bottom: moveResult.bottom})};
+      //if there is no Top-task in the helm, it is replaced with a blank template to create a new task
       if(moveResult.helm){
         if (!moveResult.helm.length){
           this.setState({
@@ -181,6 +182,7 @@ class Dashboard extends Component {
             milliseconds: 0
           })
         } else {
+          //if the helm is now occupied, the timer will be updated with previously elapsed time and timer will start
           const stashedTime = moment.duration(moveResult.helm[0].stashedTime)
           const loadTime = {
             stashedTime,
@@ -203,8 +205,10 @@ class Dashboard extends Component {
   };
       
   loadTasks = () => {
+    //if the user is not logged in, they are redirected to the login page
     if (!this.state.uuid) { return window.location.replace("/login") 
     } else{
+      //all tasks attributed to this user are retrieved from the API and sorted into their attributed lists
       API.getTasks(this.state.uuid)
       .then(res => {
         console.log(res);
@@ -212,6 +216,7 @@ class Dashboard extends Component {
         let faves = res.data.filter(task => {return (task.favorite && !task.topTask)})
         let todo = res.data.filter(task => {return (task.active && !task.favorite &&!task.topTask)})
         let everythingElse = res.data.filter(task => {return (!task.favorite && !task.active && !task.topTask)})
+        //if there is a Top-task ready to occupy the helm, the stashed time is retrieved and displayed
         let loadTime = {};
         if (firstThing.length>0) {
           const stashedTime = moment.duration(firstThing[0].stashedTime)
@@ -236,11 +241,6 @@ class Dashboard extends Component {
           isActive: false,
           ...loadTime,
         })
-        console.log("bottom", this.state.bottom)
-        console.log("right", this.state.right)
-        console.log("left", this.state.left)
-        console.log("helm", this.state.helm)
-        console.log("stashedTime", this.state.stashedTime)
       })
       .catch(err => console.log(err));
     }
