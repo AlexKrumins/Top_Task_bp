@@ -307,7 +307,7 @@ class Dashboard extends Component {
       .catch(err => console.log(err));
     }
   };
-/////////////////////////// Stopwatch Controls
+  //Stopwatch Controls
   calculateTimeDiff = (startTime, stashedTime) => {
     let timeDiff = moment.duration(moment().diff(startTime));
     if (stashedTime) timeDiff = timeDiff.add(stashedTime);
@@ -316,6 +316,7 @@ class Dashboard extends Component {
 
   startTimer = () => {
     if(!this.state.isTimerStarted) {
+      //when the timer is started, moment.js is invoked to get the current timestamp
       const startTime = moment();
       const updateTimer = () => {
         const timeDiff = this.calculateTimeDiff(startTime, this.state.stashedTime);
@@ -328,22 +329,26 @@ class Dashboard extends Component {
           isTimerStarted: true,
         });
       };
+      //the display is updated every 50 milliseconds
       this.setState({intervalTimer : setInterval(updateTimer, 50)});
     };
   };
 
   stopTimer = () => {
     if (this.state.isTimerStarted) {
+      //When the timer is stopped
+      //the interval is cleared and the new elapsed time is saved to the task's data
       clearInterval(this.state.intervalTimer);
       const timeSpent = moment.duration(moment().diff(this.state.startTime));
       timeSpent.add(this.state.stashedTime);
-      
+      //The timer readout is reset to 00:00:00
       this.setState({
         startTime: null,
         isTimerStarted: false,
         intervalTimer: null,
         stashedTime: timeSpent
       })
+      //The API is updated with the new amount of stashed time
       this.state.helm[0].stashedTime = timeSpent;
       const taskData ={
         id: this.state.helm[0].id,
@@ -355,6 +360,7 @@ class Dashboard extends Component {
     } else {return}
   };
 
+  //If any actions are taken that would bump the currently running Top-Task from the helm, this acts as a safety net returning that task to it's appropriate list.
   fullStop = async () => {
     await this.stopTimer()
     let destination = {droppableId: "bottom"}
